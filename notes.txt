@@ -1,0 +1,9 @@
+All recipe categories in order in cookbook:
+- Appetizer
+- Snack
+- Breakfast
+- Salads
+- Main Course
+- Soup
+- Dessert
+- Beverage

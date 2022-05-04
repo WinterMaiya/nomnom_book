@@ -1,0 +1,46 @@
+{% extends 'base.html' %} {% block content %}
+<div class="section">
+	<div class="container">
+		<div class="row text-center">
+			<div class="col-12">
+				<img src="{{data.image}}" alt="{{data.title}}" class="img-fluid" />
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<h1 class="text-center display-2">{{data.title | capitalize}}</h1>
+			<div class="text-center">
+				Created By:
+				<i>{{data.sourceName | capitalize}}</i>
+			</div>
+			<div class="text-left">{{data.summary | safe}}</div>
+		</div>
+		<div class="row align-items-center">
+			<div class="col-12 col-lg-7 py-5">
+				<h2 class="text-center display-6">Directions:</h2>
+				<ol class="list-group list-group-numbered">
+					{% for item in directions[0].steps %}
+					<li class="list-group-item">{{item.step}}</li>
+					{% endfor %}
+				</ol>
+			</div>
+			<div class="col-12 col-lg-5 py-5">
+				<h2 class="">Ingredients:</h2>
+				<ul class="list-group list-group-flush">
+					{% for item in data.extendedIngredients %}
+					<li class="list-group-item"><b>{{item.original}}</b></li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col text-center m-2">
+				<a href="/api/recipe/add/{{data.id}}" class="btn btn-primary"
+					>Add Recipe to my Cookbook</a
+				>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

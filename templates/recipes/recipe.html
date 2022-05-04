@@ -1,0 +1,49 @@
+{% extends 'base.html' %}{% block content %}
+<div class="section">
+	<div class="container">
+		<div class="row text-center">
+			<div class="col-12">
+				<img
+					src="{{data.picture}}"
+					alt="Picture is work in progress"
+					class="img-fluid"
+				/>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<h1 class="text-center display-2">{{data.name | capitalize}}</h1>
+			{% if g.user.id == data.user_id %}
+			<div class="text-center py-2">
+				<a class="btn btn-primary" href="/recipe/{{data.id}}/edit">Edit</a>
+				<a class="btn btn-danger" href="/recipe/{{data.id}}/delete">Delete</a>
+			</div>
+			{% endif %}
+			<div class="text-center">
+				Created By:
+				<i>{{data.created_by | capitalize}}</i>
+			</div>
+			<div class="text-left">{{data.description | safe}}</div>
+		</div>
+		<div class="row align-items-center">
+			<div class="col-12 col-lg-7 py-5">
+				<h2 class="text-center display-6">Directions:</h2>
+				<ol class="list-group list-group-numbered">
+					{% for item in directions %}
+					<li class="list-group-item">{{item}}</li>
+					{% endfor %}
+				</ol>
+			</div>
+			<div class="col-12 col-lg-5 py-5">
+				<h2 class="">Ingredients:</h2>
+				<ul class="list-group list-group-flush">
+					{% for item in ingredients %}
+					<li class="list-group-item"><b>{{item}}</b></li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

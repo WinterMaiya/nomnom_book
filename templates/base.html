@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/static/app.css" />
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+			crossorigin="anonymous"
+		/>
+		{% block links %} {% endblock links %}
+		<title>The NomNom Book</title>
+	</head>
+	<body>
+		<!-- Nav Bar -->
+		<header class="d-flex justify-content">
+			<div class="">
+				<nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top">
+					<div class="container-fluid">
+						<a class="navbar-brand mx-2" href="/">The NomNom Book</a>
+						<button
+							class="navbar-toggler"
+							type="button"
+							data-bs-toggle="offcanvas"
+							data-bs-target="#navbarOffcanvasLg"
+							aria-controls="navbarOffcanvasLg"
+						>
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						{% if g.user %} {% endif %}
+						<div
+							class="offcanvas offcanvas-end"
+							tabindex="-1"
+							id="navbarOffcanvasLg"
+							aria-labelledby="navbarOggcanvasLgLabel"
+						>
+							<div class="offcanvas-header">
+								<h5
+									class="offcanvas-title text-center"
+									id="offcanvasNavbarLabel"
+								>
+									The NomNom Book
+								</h5>
+								<button
+									type="button"
+									class="btn-close text-reset"
+									data-bs-dismiss="offcanvas"
+									aria-label="Close"
+								></button>
+							</div>
+							<div class="offcanvas-body">
+								<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+									{% if not g.user %}
+									<li class="nav-item">
+										<a class="nav-link active" href="/signup">SignUp</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link active" href="/login">Login</a>
+									</li>
+									{% else %}
+									<li class="nav-item dropdown my-2">
+										<a
+											class="nav-link dropdown-toggle"
+											href="#"
+											id="offcanvasNavbarDropdown"
+											role="button"
+											data-bs-toggle="dropdown"
+											aria-expanded="false"
+										>
+											<img
+												class="rounded-circle z-depth-2 position-relative"
+												style="width: 30px"
+												alt="40x40"
+												src="{{g.user.profile_pic}}"
+												data-holder-rendered="true"
+											/>
+											{% if g.friend_request %}
+											<span
+												class="position-absolute top-2 start-500 translate-middle badge rounded-pill bg-danger"
+												>{{g.request_length}}
+												<span class="visually-hidden">New alerts</span>
+											</span>
+											{% endif %}
+										</a>
+										<ul
+											class="dropdown-menu"
+											aria-labelledby="offcanvasNavbarDropdown"
+										>
+											{% if g.friend_request %}
+											<li>
+												<a
+													class="dropdown-item position-relative"
+													href="/friends/requests"
+													>Requests</a
+												>
+											</li>
+											{% endif %}
+											<li>
+												<a class="dropdown-item" href="/profile">Profile</a>
+											</li>
+											<li>
+												<hr class="dropdown-divider" />
+											</li>
+											<li>
+												<a class="dropdown-item" href="/recipe/add"
+													>Add a New Recipe</a
+												>
+											</li>
+											<!-- <li>
+												<a class="dropdown-item" href="#"
+													>Add a Recipe from a Website WIP</a
+												>
+											</li> -->
+											<li>
+												<a class="dropdown-item" href="/friends/add"
+													>Find a Friend</a
+												>
+											</li>
+											<li>
+												<hr class="dropdown-divider" />
+											</li>
+											<li>
+												<a class="dropdown-item" href="/logout">Logout</a>
+											</li>
+										</ul>
+									</li>
+									<form class="d-flex my-2" action="/search">
+										<input
+											class="form-control me-2"
+											type="search"
+											placeholder="Find New Recipes"
+											aria-label="Search"
+											name="q"
+											id="q"
+										/>
+										<button class="btn btn-outline-success" type="submit">
+											Search
+										</button>
+									</form>
+								</ul>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+		</header>
+		<div class="container">
+			{% for category, message in get_flashed_messages(with_categories=True) %}
+			<div class="alert alert-{{ category }}">{{ message }}</div>
+			{% endfor %}
+		</div>
+		{% block content %}
+		<!-- Contents for Jinja -->
+		{% endblock content %}
+
+		<!-- Bootstrap Script -->
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+			crossorigin="anonymous"
+		></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	</body>
+</html>

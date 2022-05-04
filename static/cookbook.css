@@ -1,0 +1,28 @@
+@media (min-width: 768px) {
+	.bd-sidebar {
+		display: grid;
+		grid-area: sidebar;
+	}
+	.bd-main {
+		display: grid;
+		grid-area: main;
+	}
+	.bd-layout {
+		display: grid;
+		grid-template-columns: 1fr 5fr;
+		gap: 1.5rem;
+		grid-template-areas: "sidebar main";
+	}
+}
+
+.bd-sidebar-row {
+	position: sticky;
+}
+
+.c_navbar {
+	top: 4rem;
+}
+
+li {
+	list-style-type: none;
+}

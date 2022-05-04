@@ -1,0 +1,30 @@
+{% extends 'base.html' %}{% block content %}
+<div class="container my-4">
+	<div class="row">
+		{% for request in data %}
+		<div class="col-lg-2 text-center">
+			<div class="card">
+				<div class="card-body text-center">
+					<div class="card-title">{{request.name}}</div>
+					<img
+						class="rounded-circle z-depth-2 img-fluid"
+						style="width: 100px"
+						alt="40x40"
+						src="{{request.profile_pic}}"
+						data-holder-rendered="true"
+					/>
+					<form action="/friends/requests/{{request.id}}?a=true" method="GET">
+						<input type="hidden" name="a" value="true" />
+						<button class="btn btn-success my-2">Accept</button>
+					</form>
+					<form action="/friends/requests/{{request.id}}?a=false" method="GET">
+						<input type="hidden" name="a" value="false" />
+						<button type="submit" class="btn btn-warning">Decline</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock content %}

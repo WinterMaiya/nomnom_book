@@ -1,0 +1,29 @@
+{% extends 'base.html' %} {% block content %}
+<div class="text-center">
+	<h2 class="display-6">
+		Searched for: <u><i>{{search}}</i></u>
+	</h2>
+</div>
+<div class="container">
+	<div class="row justify-content-center">
+		{% for recipe in data.results %}
+		<div class="col col-lg-4">
+			<div class="card text-center display-6 m-2">
+				<h3 class="card-header">{{recipe.title}}</h3>
+				<img
+					class="img-fluid"
+					src="{{recipe.image}}"
+					alt="{{recipe.title}}-image"
+				/>
+				<div class="card-body">
+					<a href="/api/recipe/{{recipe.id}}" class="btn btn-primary"
+						>View Recipe</a
+					>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock content %}
