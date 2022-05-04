@@ -1,6 +1,7 @@
 # TODO: Edit Friends
 # TODO: Add recipe from website
 # TODO: Add Reset Password
+# TODO: Add Tests
 import os
 import requests
 import json
