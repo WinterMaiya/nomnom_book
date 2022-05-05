@@ -250,7 +250,7 @@ def search():
             params={
                 "apiKey": api_key,
                 "query": search,
-                "number": 9,
+                "number": 6,
             },
         )
         response_data = resp.json()
