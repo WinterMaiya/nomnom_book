@@ -1,6 +1,18 @@
 html {
 	min-height: 100%;
 }
+@media (min-width: 768px) {
+	.search-sm {
+		visibility: hidden;
+		display: none;
+	}
+}
+@media (max-width: 765px) {
+	#search-md {
+		visibility: hidden;
+		display: none;
+	}
+}
 
 #cookingVideo {
 	height: 100vh;
