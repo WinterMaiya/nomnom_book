@@ -26,8 +26,8 @@ html {
 
 body {
 	padding-top: 80px;
-	background: rgba(255, 223, 197);
-	background-image: linear-gradient(top, #ffffff, rgba(255, 223, 197));
+	background: rgba(255, 238, 224);
+	background: linear-gradient(top, #ffffff, rgba(255, 238, 224));
 }
 
 .c_image {
@@ -52,13 +52,13 @@ body {
 }
 
 .btn-secondary {
-	background-color: #ffc107;
-	border-color: #ffc107;
+	background-color: #ffc107 !important;
+	border-color: #ffc107 !important;
 }
 
 .btn-secondary:hover {
-	background-color: rgb(211, 158, 0);
-	border-color: rgb(211, 158, 0);
+	background-color: rgb(211, 158, 0) !important;
+	border-color: rgb(211, 158, 0) !important;
 }
 
 .list-group-item {
