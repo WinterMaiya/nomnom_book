@@ -185,8 +185,6 @@ def homepage():
         for friend in g.friends:
             for recipe in friend.recipes:
                 recipes.append(recipe)
-                print(recipe)
-        print(recipes)
         return render_template("/cookbook.html", recipes=recipes)
     else:
         return render_template("/index.html")
