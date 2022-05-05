@@ -26,12 +26,12 @@
 			</div>
 			<div class="text-left">{{data.description | safe}}</div>
 		</div>
-		<div class="row align-items-center bg-none">
+		<div class="row align-items-center">
 			<div class="col-12 col-lg-7 py-5">
 				<h2 class="text-center display-6">Directions:</h2>
-				<ol class="list-group list-group-numbered">
+				<ol class="list-group list-group-numbered list-group-flush">
 					{% for item in directions %}
-					<li class="list-group-item bg-none">{{item}}</li>
+					<li class="list-group-item list-group-item-">{{item}}</li>
 					{% endfor %}
 				</ol>
 			</div>

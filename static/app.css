@@ -60,3 +60,8 @@ body {
 	background-color: rgb(211, 158, 0);
 	border-color: rgb(211, 158, 0);
 }
+
+.list-group-item {
+	background-color: rgba(0, 0, 0, 0) !important;
+	/* border: none; */
+}
