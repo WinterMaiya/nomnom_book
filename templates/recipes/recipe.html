@@ -5,14 +5,15 @@
 			<div class="col-12">
 				<img
 					src="{{data.picture}}"
-					alt="Picture is work in progress"
+					alt="{{data.title}}"
 					class="img-fluid"
+					style="max-width: 500px"
 				/>
 			</div>
 		</div>
 	</div>
 	<div class="container">
-		<div class="row">
+		<div class="row bg-none">
 			<h1 class="text-center display-2">{{data.name | capitalize}}</h1>
 			{% if g.user.id == data.user_id %}
 			<div class="text-center py-2">
@@ -29,9 +30,9 @@
 		<div class="row align-items-center">
 			<div class="col-12 col-lg-7 py-5">
 				<h2 class="text-center display-6">Directions:</h2>
-				<ol class="list-group list-group-numbered">
+				<ol class="list-group list-group-numbered list-group-flush">
 					{% for item in directions %}
-					<li class="list-group-item">{{item}}</li>
+					<li class="list-group-item list-group-item-">{{item}}</li>
 					{% endfor %}
 				</ol>
 			</div>

@@ -1,3 +1,19 @@
+// This is to fix an error with jinja
+let debug = document.getElementById("recipes");
+debug.lastChild.replaceWith(...debug.childNodes);
+
+const CATEGORIES = [
+	"appetizer",
+	"snack",
+	"breakfast",
+	"salads",
+	"main",
+	"soup",
+	"dessert",
+	"beverage",
+];
+
+//Create the categories buttons
 let appetizer = document.getElementById("appetizer");
 let snacks = document.getElementById("snack");
 let breakfast = document.getElementById("breakfast");
@@ -9,8 +25,7 @@ let beverages = document.getElementById("beverage");
 let all = document.getElementById("all");
 
 let allRecipes = document.getElementById("recipes").children;
-
-let category = (type) => {
+const category = (type) => {
 	for (let i of allRecipes) {
 		if (type == "all") {
 			i.classList.remove("visually-hidden");
@@ -24,71 +39,27 @@ let category = (type) => {
 	}
 };
 
-appetizer.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("appetizer");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Appetizers";
+//TODO:
+const UpdateButtons = (list) => {
+	for (let i of list) {
+		id = document.getElementById(i);
+		class_ = document.getElementsByClassName(`c_${i}`);
+		if (!class_) {
+			id.classList.add("visually-hidden");
+		} else {
+			id.addEventListener("click", function (e) {
+				e.preventDefault;
+				category(i);
+				let cParent = document.getElementsByClassName("c_category");
+				for (j of cParent) {
+					j.innerText = i;
+				}
+			});
+		}
 	}
-});
-snacks.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("snacks");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Snacks";
-	}
-});
-breakfast.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("breakfast");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Breakfasts";
-	}
-});
-salads.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("salads");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Salads";
-	}
-});
-main.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("main");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Main Dishes";
-	}
-});
-soup.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("soup");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Soups";
-	}
-});
-dessert.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("dessert");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Desserts";
-	}
-});
-beverages.addEventListener("click", function (e) {
-	e.preventDefault;
-	category("beverages");
-	let cParent = document.getElementsByClassName("c_category");
-	for (i of cParent) {
-		i.innerText = "Beverages";
-	}
-});
+};
 
+UpdateButtons(CATEGORIES);
 all.addEventListener("click", function (e) {
 	e.preventDefault;
 	category("all");

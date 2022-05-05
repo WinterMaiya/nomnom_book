@@ -4,13 +4,13 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/static/app.css" />
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 			integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
 			crossorigin="anonymous"
 		/>
+		<link rel="stylesheet" href="/static/app.css" />
 		{% block links %} {% endblock links %}
 		<title>The NomNom Book</title>
 	</head>
@@ -18,7 +18,7 @@
 		<!-- Nav Bar -->
 		<header class="d-flex justify-content">
 			<div class="">
-				<nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top">
+				<nav class="navbar navbar-dark navbar-expand-md bg-light fixed-top">
 					<div class="container-fluid">
 						<a class="navbar-brand mx-2" href="/">The NomNom Book</a>
 						<button
@@ -37,7 +37,7 @@
 							id="navbarOffcanvasLg"
 							aria-labelledby="navbarOggcanvasLgLabel"
 						>
-							<div class="offcanvas-header">
+							<div class="offcanvas-header bg-light">
 								<h5
 									class="offcanvas-title text-center"
 									id="offcanvasNavbarLabel"
@@ -51,7 +51,7 @@
 									aria-label="Close"
 								></button>
 							</div>
-							<div class="offcanvas-body">
+							<div class="offcanvas-body bg-light">
 								<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
 									{% if not g.user %}
 									<li class="nav-item">
@@ -61,7 +61,7 @@
 										<a class="nav-link active" href="/login">Login</a>
 									</li>
 									{% else %}
-									<li class="nav-item dropdown my-2">
+									<li class="nav-item dropdown my-2" id="search-md">
 										<a
 											class="nav-link dropdown-toggle"
 											href="#"
@@ -127,6 +127,36 @@
 											</li>
 										</ul>
 									</li>
+									{% if g.friend_request %}
+									<li class="nav-item search-sm">
+										<a
+											class="dropdown-item position-relative"
+											href="/friends/requests"
+											>Requests</a
+										>
+									</li>
+									{% endif %}
+									<li class="nav-item search-sm">
+										<a class="nav-link active" href="/profile">Profile</a>
+									</li>
+									<li class="nav-item search-sm">
+										<a class="nav-link active" href="/recipe/add"
+											>Add a New Recipe</a
+										>
+									</li>
+									<!-- <li class="nav-item search-sm">
+												<a class="dropdown-item" href="#"
+													>Add a Recipe from a Website WIP</a
+												>
+											</li> -->
+									<li class="nav-item search-sm">
+										<a class="nav-link active" href="/friends/add"
+											>Find a Friend</a
+										>
+									</li>
+									<li class="nav-item search-sm">
+										<a class="nav-link active" href="/logout">Logout</a>
+									</li>
 									<form class="d-flex my-2" action="/search">
 										<input
 											class="form-control me-2"
@@ -136,7 +166,7 @@
 											name="q"
 											id="q"
 										/>
-										<button class="btn btn-outline-success" type="submit">
+										<button class="btn btn-outline-warning" type="submit">
 											Search
 										</button>
 									</form>

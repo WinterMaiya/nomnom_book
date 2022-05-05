@@ -3,120 +3,151 @@
 block content %}
 <div class="container-xxl my-md-4 bd-layout">
 	<div class="bd-sidebar">
-		<div class="bd-sidebar-row row">
-			<ul>
-				<li>
-					<h3 class="text-center">Cooks:</h3>
-				</li>
-				<li>
-					<div class="col text-center my-2">
-						<a href="/profile">
-							<img
-								class="rounded-circle z-depth-2 c_image"
-								alt="40x40"
-								src="{{g.user.profile_pic}}"
-								data-holder-rendered="true"
-							/>
-						</a>
-						<div>{{g.user.name}}</div>
-						<div>Loves: <i>{{g.user.favorite_food}}</i></div>
-					</div>
-				</li>
-				{% for friend in g.friends %}
-				<li>
-					<div class="col text-center my-2">
-						<img
-							class="rounded-circle z-depth-2 c_image"
-							alt="40x40"
-							src="{{friend.profile_pic}}"
-							data-holder-rendered="true"
-						/>
-						<div>{{friend.name}}</div>
-						<div>Loves: <i>{{friend.favorite_food}}</i></div>
-					</div>
-				</li>
-				{% endfor %}
-			</ul>
+		<div class="bd-sidebar-row row-cols">
+			<div class="col">
+				<h3 class="text-center">Cooks:</h3>
+			</div>
+
+			<div class="col text-center my-2">
+				<a href="/profile">
+					<img
+						class="rounded-circle z-depth-2 c_image"
+						alt="40x40"
+						src="{{g.user.profile_pic}}"
+						data-holder-rendered="true"
+					/>
+				</a>
+				<div>{{g.user.name}}</div>
+				<div>Loves: <i>{{g.user.favorite_food}}</i></div>
+			</div>
+			{% for friend in g.friends %}
+
+			<div class="col text-center my-2">
+				<img
+					class="rounded-circle z-depth-2 c_image"
+					alt="40x40"
+					src="{{friend.profile_pic}}"
+					data-holder-rendered="true"
+				/>
+				<div>{{friend.name}}</div>
+				<div>Loves: <i>{{friend.favorite_food}}</i></div>
+			</div>
+
+			{% endfor %}
 		</div>
 	</div>
 	<div class="bd-main">
-		<div class="container">
-			<div class="row">
-				<div class="column">
-					<h1 class="text-center display-1">
-						{{g.user.name | capitalize}}'s Cookbook
-					</h1>
-				</div>
+		<div class="row">
+			<div class="col">
+				<h1 class="text-center display-1">
+					{{g.user.name | capitalize}}'s Cookbook
+				</h1>
 			</div>
 		</div>
 
 		{% if not recipes %}
-		<div class="container text-center">
-			<h1 class="display-6 text-center">
-				Theres nothing here... lets add a recipe today!!
-			</h1>
-			<a href="/recipe/add" class="btn btn-primary">Add a Custom Recipe</a>
+		<div class="row">
+			<div class="col">
+				<h1 class="display-6 text-center">
+					Theres nothing here... lets add a recipe today!!
+				</h1>
+				<a href="/recipe/add" class="btn btn-primary text-center"
+					>Add a Custom Recipe</a
+				>
+			</div>
 		</div>
 
 		{% else %}
-		<div class="dropdown text-center">
-			<button
-				class="btn btn-secondary dropdown-toggle c_category"
-				type="button"
-				id="dropdownMenuButton2"
-				data-bs-toggle="dropdown"
-				aria-expanded="false"
-			>
-				Category
-			</button>
-			<ul
-				class="dropdown-menu dropdown-menu-dark"
-				aria-labelledby="dropdownMenuButton2"
-			>
-				<li>
-					<a class="dropdown-item" id="all" href="#">View All</a>
-				</li>
-				<li><hr class="dropdown-divider" /></li>
-				<li>
-					<a class="dropdown-item" id="appetizer" href="#">Appetizer</a>
-				</li>
-				<li><a class="dropdown-item" id="snack" href="#">Snacks</a></li>
-				<li><a class="dropdown-item" id="breakfast" href="#">Breakfasts</a></li>
-				<li><a class="dropdown-item" id="salads" href="#">Salads</a></li>
-				<li><a class="dropdown-item" id="main" href="#">Main Courses</a></li>
-				<li><a class="dropdown-item" id="soup" href="#">Soups</a></li>
-				<li><a class="dropdown-item" id="dessert" href="#">Desserts</a></li>
-				<li><a class="dropdown-item" id="beverage" href="#">Beverages</a></li>
-			</ul>
-		</div>
-		<div class="container">
-			<div class="row" id="recipes">
-				{% for recipe in recipes %}
-				<div class="col-lg-6 text-center c_{{recipe.category}} c_recipes">
-					<!-- visually-hidden -->
-					<div class="card my-2">
-						<div class="card-header text-start">
-							{{recipe.category | capitalize}}
-						</div>
-						<div class="card-body text-center">
-							<img
-								src="{{recipe.picture}}"
-								alt="{{recipe.name}}"
-								class="img-fluid py-1"
-							/>
-							<h2>{{recipe.name | capitalize}}</h2>
-							<p>{{recipe.description | safe}}</p>
-							<p>Created By: {{recipe.created_by | capitalize}}</p>
-							{% if not recipe.homemade %}
-							<p>Added By: {{recipe.user.name | capitalize}}</p>
-							{% endif %}
-							<a href="/recipe/{{recipe.id}}" class="btn btn-primary"
-								>See Recipe</a
+		<div class="row">
+			<div class="col">
+				<div class="dropdown text-center">
+					<button
+						class="btn btn-secondary dropdown-toggle c_category text-dark"
+						type="button"
+						id="dropdownMenuButton2"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						Category
+					</button>
+					<ul
+						class="dropdown-menu dropdown-menu-dark bg-warning"
+						aria-labelledby="dropdownMenuButton2"
+					>
+						<li>
+							<a class="dropdown-item text-dark" id="all" href="#">View All</a>
+						</li>
+						<li><hr class="dropdown-divider text-dark" /></li>
+						<li>
+							<a class="dropdown-item text-dark" id="appetizer" href="#"
+								>Appetizer</a
 							>
-						</div>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="snack" href="#">Snacks</a>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="breakfast" href="#"
+								>Breakfasts</a
+							>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="salads" href="#">Salads</a>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="main" href="#"
+								>Main Courses</a
+							>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="soup" href="#">Soups</a>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="dessert" href="#"
+								>Desserts</a
+							>
+						</li>
+						<li>
+							<a class="dropdown-item text-dark" id="beverage" href="#"
+								>Beverages</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="row row-cols-md-2 row-cols-xl-3 row-cols-1" id="recipes">
+			{% for recipe in recipes %}
+			<div class="col c_{{recipe.category}} c_recipes">
+				<!-- visually-hidden -->
+				<div class="card my-2">
+					<div class="card-header text-start">
+						{{recipe.category | capitalize}}
+					</div>
+					<div class="card-body text-center">
+						<img
+							src="{{recipe.picture}}"
+							alt="{{recipe.name}}"
+							class="img-fluid py-1"
+						/>
+						<h2>{{recipe.name | capitalize}}</h2>
+						<p>{{recipe.description[:75] | safe}}...</p>
+						<p>Created By: {{recipe.created_by | capitalize}}</p>
+						{% if not recipe.homemade %}
+						<p>Added By: {{recipe.user.name | capitalize}}</p>
+						{% endif %}
+						<a href="/recipe/{{recipe.id}}" class="btn btn-primary"
+							>See Recipe</a
+						>
 					</div>
 				</div>
-				{% endfor %}
+			</div>
+
+			{% endfor %}
+		</div>
+		<div class="row">
+			<div class="col">
+				<!-- needed for debug -->
 			</div>
 		</div>
 	</div>

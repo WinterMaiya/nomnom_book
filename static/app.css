@@ -1,3 +1,19 @@
+html {
+	min-height: 100%;
+}
+@media (min-width: 768px) {
+	.search-sm {
+		visibility: hidden;
+		display: none;
+	}
+}
+@media (max-width: 765px) {
+	#search-md {
+		visibility: hidden;
+		display: none;
+	}
+}
+
 #cookingVideo {
 	height: 100vh;
 	width: 100vw;
@@ -22,8 +38,48 @@
 
 body {
 	padding-top: 80px;
+	background: rgba(255, 238, 224);
+	background: linear-gradient(top, #ffffff, rgba(255, 238, 224));
 }
 
 .c_image {
 	width: 100px;
+}
+
+.btn {
+	color: white;
+}
+.btn-primary {
+	background-color: rgb(253, 137, 41);
+	border-color: rgb(253, 137, 41);
+}
+
+.btn-primary:hover {
+	background-color: rgb(253, 126, 20);
+	border-color: rgb(253, 126, 20);
+}
+
+.bg-light {
+	background-color: rgba(253, 126, 20) !important;
+}
+
+.btn-secondary {
+	background-color: #ffc107 !important;
+	border-color: #ffc107 !important;
+}
+
+.btn-secondary:hover {
+	background-color: rgb(211, 158, 0) !important;
+	border-color: rgb(211, 158, 0) !important;
+}
+
+.list-group-item {
+	background-color: rgba(0, 0, 0, 0) !important;
+	/* border: none; */
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+	color: #fff;
+	background-color: rgb(211, 158, 0) !important;
 }

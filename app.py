@@ -185,7 +185,6 @@ def homepage():
         for friend in g.friends:
             for recipe in friend.recipes:
                 recipes.append(recipe)
-
         return render_template("/cookbook.html", recipes=recipes)
     else:
         return render_template("/index.html")
@@ -251,7 +250,7 @@ def search():
             params={
                 "apiKey": api_key,
                 "query": search,
-                "number": 9,
+                "number": 6,
             },
         )
         response_data = resp.json()

@@ -14,6 +14,12 @@
 		grid-template-areas: "sidebar main";
 	}
 }
+@media (max-width: 765px) {
+	.bd-sidebar {
+		visibility: hidden;
+		display: none;
+	}
+}
 
 .bd-sidebar-row {
 	position: sticky;
