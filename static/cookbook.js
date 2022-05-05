@@ -1,3 +1,8 @@
+// This is to fix an error with jinja
+let debug = document.getElementById("recipes").lastChild;
+debug.replaceWith(...debug.childNodes);
+
+//Create the categories buttons
 let appetizer = document.getElementById("appetizer");
 let snacks = document.getElementById("snack");
 let breakfast = document.getElementById("breakfast");
