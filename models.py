@@ -130,6 +130,11 @@ class User(db.Model):
                 return user
         return False
 
+    @classmethod
+    def change_password(cls, password):
+        encrypt_pwd = bcrypt.generate_password_hash(password + pepper).decode("UTF-8")
+        return encrypt_pwd
+
 
 class Recipe(db.Model):
     """A design for all recipes"""

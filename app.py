@@ -2,6 +2,7 @@
 # TODO: Add recipe from website
 # TODO: Add Reset Password
 # TODO: Add Tests
+from crypt import methods
 import os
 import requests
 import json
@@ -25,6 +26,7 @@ from forms import (
     recipe_categories,
     EditUser,
     EditRecipeForm,
+    ChangePassword,
 )
 from werkzeug.utils import secure_filename
 
@@ -229,6 +231,27 @@ def edit_profile():
         form.email.data = g.user.email
         form.favorite_food.data = g.user.favorite_food
         return render_template("edit_profile.html", form=form)
+
+
+@app.route("/password", methods=["GET", "POST"])
+def change_password():
+    """Allows the user to change their password. Takes their current password and a new password"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+    form = ChangePassword()
+    if form.validate_on_submit():
+        user = User.authenticate(g.user.email, form.curr_password.data)
+        if user:
+            user.password = User.change_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash("Password Changed!")
+            return redirect("/profile")
+        flash("Incorrect Password", "warning")
+        return redirect("/password")
+
+    return render_template("change_password.html", form=form)
 
 
 #############################################################################
