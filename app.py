@@ -111,6 +111,13 @@ def do_logout():
         del session[CURR_USER_KEY]
 
 
+def check_user():
+    """This makes sure the user is logged in to access a route. Otherwise it redirects to login with a warning"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+
+
 @app.route("/logout")
 def logout():
     """Logs out the user"""
@@ -195,9 +202,7 @@ def homepage():
 @app.route("/profile", methods=["GET", "POST"])
 def edit_profile():
     """Allows the user to edit their profile. Also has links to changing your password"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     form = EditUser()
     if form.validate_on_submit():
         user = User.authenticate(g.user.email, form.password.data)
@@ -236,9 +241,7 @@ def edit_profile():
 @app.route("/password", methods=["GET", "POST"])
 def change_password():
     """Allows the user to change their password. Takes their current password and a new password"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     form = ChangePassword()
     if form.validate_on_submit():
         user = User.authenticate(g.user.email, form.curr_password.data)
@@ -292,9 +295,7 @@ def show_api_recipe(recipe_id):
     """Shows the full details of the recipe. If a user would like to add the recipe
     to their cook book there will be a button that says add to my cook book.
     this will copy the recipe into my database and show it along with the user"""
-    if not g.user:
-        flash("Unauthorized", "danger")
-        return redirect("/")
+    check_user()
 
     resp = requests.get(
         f"https://api.spoonacular.com/recipes/{recipe_id}/information",
@@ -329,9 +330,7 @@ def add_api_recipe(recipe_id):
     ideal but with a free api this is what I have to work with
     we basically use the data to setup a recipe as it would be in my database.
     then it removes the recipes from the session"""
-    if not g.user:
-        flash("Unauthorized", "danger")
-        return redirect("/")
+    check_user()
     try:
         resp = requests.get(
             f"https://api.spoonacular.com/recipes/{recipe_id}/information",
@@ -483,9 +482,7 @@ def edit_recipe(id):
 @app.route("/recipe/<int:id>")
 def recipe_view(id):
     """Displays a recipe in the database to a user"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     recipe = Recipe.query.get_or_404(id)
     ingredients = json.loads(recipe.ingredients)
     directions = json.loads(recipe.directions)
@@ -499,9 +496,7 @@ def recipe_view(id):
 
 @app.route("/recipe/<int:id>/delete")
 def delete_recipe(id):
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     recipe = Recipe.query.get_or_404(id)
     if recipe.user_id == g.user.id:
         cloudinary.uploader.destroy(f"recipes/{recipe.image_id}", invalidate=True)
@@ -519,9 +514,7 @@ def delete_recipe(id):
 @app.get("/friends/requests")
 def friend_requests():
     """Finds all the friend requests that have been sent"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     if g.friend_request:
         f_requests = Friend.query.filter(
             Friend.user_request_received_id == g.user.id,
@@ -539,9 +532,7 @@ def friend_requests():
 @app.route("/friends/requests/<id>")
 def accept_decline_friend(id):
     """Accepts or declines a friend request"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     if g.friend_request:
         try:
             choice = request.args.get("a")
@@ -570,9 +561,7 @@ def accept_decline_friend(id):
 @app.route("/friends/add", methods=["GET", "POST"])
 def add_friend():
     """Creates the form which allows users to add friends"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     form = AddFriend()
 
     if form.validate_on_submit():
