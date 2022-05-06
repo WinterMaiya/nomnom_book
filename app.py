@@ -311,8 +311,8 @@ def search():
 def show_api_recipe(recipe_id):
     """Shows the full details of the recipe. If a user would like to add the recipe
     to their cook book there will be a button that says add to my cook book.
-    this will copy the recipe into my database and show it along with the user"""
-    check_user()
+    this will copy the recipe into my database and show it along with the user
+    Any user can see this page, so you can easily share recipes"""
 
     resp = requests.get(
         f"https://api.spoonacular.com/recipes/{recipe_id}/information",
