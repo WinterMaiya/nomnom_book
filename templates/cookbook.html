@@ -62,7 +62,7 @@ block content %}
 			<div class="col">
 				<div class="dropdown text-center">
 					<button
-						class="shadow btn btn-secondary dropdown-toggle c_category text-dark"
+						class="btn btn-secondary dropdown-toggle c_category text-dark"
 						type="button"
 						id="dropdownMenuButton2"
 						data-bs-toggle="dropdown"
@@ -121,7 +121,7 @@ block content %}
 			<div class="col c_{{recipe.category}} c_recipes">
 				<!-- visually-hidden -->
 				<div class="shadow card my-2">
-					<div class="card-header text-start">
+					<div class="card-header text-start text-break">
 						{{recipe.category | capitalize}}
 					</div>
 					<div class="card-body text-center">
@@ -130,7 +130,7 @@ block content %}
 							alt="{{recipe.name}}"
 							class="img-fluid py-1"
 						/>
-						<h2>{{recipe.name | capitalize}}</h2>
+						<h2 class="text-break fs-4">{{recipe.name | capitalize}}</h2>
 						<p>{{recipe.description[:75] | safe}}...</p>
 						<p>Created By: {{recipe.created_by | capitalize}}</p>
 						{% if not recipe.homemade %}
