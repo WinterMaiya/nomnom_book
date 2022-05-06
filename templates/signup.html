@@ -1,20 +1,22 @@
 {% extends 'base.html' %} {% block content %}
-<div class="row justify-content-md-center margin-top-1">
-	<div class="col-md-7 col-lg-5">
-		<h1>Join Now</h1>
-		<form method="POST" class="form-floating">
-			{{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
-			'hidden' %}
-			<div class="form-group">
-				<label for="{{field.label.text}}">{{field.label.text}}</label>
-				{{field(placeholder=field.label.text, class="shadow-sm form-control
-				my-2") }}
-			</div>
-			{% for error in field.errors %}
-			<div class="text-danger form-text">{{ error }}</div>
-			{% endfor %} {% endfor %}
-			<button type="submit" class="shadow btn btn-primary">SignUp</button>
-		</form>
+<div class="container">
+	<div class="row justify-content-md-center margin-top-1">
+		<div class="col-md-7 col-lg-5">
+			<h1>Join Now</h1>
+			<form method="POST" class="form-floating">
+				{{ form.hidden_tag() }} {% for field in form if field.widget.input_type
+				!= 'hidden' %}
+				<div class="form-group">
+					<label for="{{field.label.text}}">{{field.label.text}}</label>
+					{{field(placeholder=field.label.text, class="shadow-sm form-control
+					my-2") }}
+				</div>
+				{% for error in field.errors %}
+				<div class="text-danger form-text">{{ error }}</div>
+				{% endfor %} {% endfor %}
+				<button type="submit" class="shadow btn btn-primary">SignUp</button>
+			</form>
+		</div>
 	</div>
 </div>
 

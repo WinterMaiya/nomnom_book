@@ -185,9 +185,32 @@
 			<div class="alert alert-{{ category }}">{{ message }}</div>
 			{% endfor %}
 		</div>
-		{% block content %}
-		<!-- Contents for Jinja -->
-		{% endblock content %}
+		<main>
+			{% block content %}
+			<!-- Contents for Jinja -->
+			{% endblock content %}
+		</main>
+		<!-- Footer -->
+		<footer class="bg-dark text-center text-white footer">
+			<div class="container">
+				<span>
+					This content was created by Maiya Winter as a personal side project.
+					You can view the GitHub repository
+					<a href="https://github.com/WinterMaiya/nomnom_book">here.</a>
+				</span>
+				<div class="container">
+					<div>
+						© 2022 Copyright:
+						<a
+							class="text-white"
+							href="https://github.com/WinterMaiya/nomnom_book"
+							>Maiya Winter</a
+						>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<!-- Footer -->
 
 		<!-- Bootstrap Script -->
 		<script
