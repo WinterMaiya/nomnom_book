@@ -1,8 +1,9 @@
+<!-- Basic forms template. Includes j_form_title, j_form_btn, j_form_script -->
 {% extends 'base.html' %} {% block content %}
 <div class="container my-3">
 	<div class="row justify-content-md-center margin-top-1">
 		<div class="col-md-7 col-lg-5">
-			<h1>Edit Your Profile</h1>
+			<h1>{{ j_form_title }}</h1>
 			<form method="POST" class="form-floating" enctype="multipart/form-data">
 				{{ form.hidden_tag() }} {% for field in form if field.widget.input_type
 				!= 'hidden' %}
@@ -14,13 +15,12 @@
 				{% for error in field.errors %}
 				<div class="text-danger form-text">{{ error }}</div>
 				{% endfor %} {% endfor %}
-				<button type="submit" class="shadow btn btn-primary">Edit</button>
+
+				<button type="submit" class="shadow btn btn-primary">
+					{{ j_form_btn }}
+				</button>
 			</form>
-			<a href="/password" class="btn btn-secondary my-3"
-				>Change Your Password</a
-			>
 		</div>
 	</div>
 </div>
-
-{% endblock content %}
+{% block form_script %} {% endblock form_script %} {% endblock content %}

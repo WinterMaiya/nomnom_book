@@ -25,8 +25,8 @@ from forms import (
     recipe_categories,
     EditUser,
     EditRecipeForm,
+    ChangePassword,
 )
-from werkzeug.utils import secure_filename
 
 IMAGE_URL = (
     "https://res.cloudinary.com/grandsloth/image/upload/w_1000,ar_1:1,c_fill,g_auto"
@@ -109,6 +109,13 @@ def do_logout():
         del session[CURR_USER_KEY]
 
 
+def check_user():
+    """This makes sure the user is logged in to access a route. Otherwise it redirects to login with a warning"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+
+
 @app.route("/logout")
 def logout():
     """Logs out the user"""
@@ -126,6 +133,8 @@ def signup():
     If a email already exists return an error"""
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+    j_form_title = "Sign Up"
+    j_form_btn = "Sign Up"
     form = SignUp()
 
     if form.validate_on_submit():
@@ -147,13 +156,19 @@ def signup():
         return redirect("/")
 
     else:
-        return render_template("/signup.html", form=form)
+        return render_template(
+            "/forms_base.html",
+            form=form,
+            j_form_title=j_form_title,
+            j_form_btn=j_form_btn,
+        )
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Logs in a user and checks their credentials"""
-
+    j_form_title = "Login"
+    j_form_btn = "Login"
     form = Login()
 
     if form.validate_on_submit():
@@ -165,7 +180,9 @@ def login():
             return redirect("/")
 
         flash("Invalid email or password", "danger")
-    return render_template("/login.html", form=form)
+    return render_template(
+        "/forms_base.html", form=form, j_form_title=j_form_title, j_form_btn=j_form_btn
+    )
 
 
 #########################################################################
@@ -193,9 +210,7 @@ def homepage():
 @app.route("/profile", methods=["GET", "POST"])
 def edit_profile():
     """Allows the user to edit their profile. Also has links to changing your password"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     form = EditUser()
     if form.validate_on_submit():
         user = User.authenticate(g.user.email, form.password.data)
@@ -231,37 +246,65 @@ def edit_profile():
         return render_template("edit_profile.html", form=form)
 
 
+@app.route("/password", methods=["GET", "POST"])
+def change_password():
+    """Allows the user to change their password. Takes their current password and a new password"""
+    check_user()
+    j_form_title = "Change Your Password"
+    j_form_btn = "Change"
+    form = ChangePassword()
+    if form.validate_on_submit():
+        user = User.authenticate(g.user.email, form.curr_password.data)
+        if user:
+            user.password = User.change_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash("Password Changed!")
+            return redirect("/profile")
+        flash("Incorrect Password", "warning")
+        return redirect("/password")
+
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )
+
+
 #############################################################################
 # Routes for external Api
 
 
 @app.route("/search")
 def search():
-    """Allows the user to search. If the limit on the api is reached display a 402 error page"""
-    if g.user:
-        search = request.args.get("q")
+    """Allows the user to search returns recipes in the users cookbook as well as recipes from the api"""
+    check_user()
 
-        if not search:
-            flash("Must have a Search Term", "warning")
-            return redirect("/")
+    search = request.args.get("q")
+    print(search)
 
-        resp = requests.get(
-            "https://api.spoonacular.com/recipes/complexSearch",
-            params={
-                "apiKey": api_key,
-                "query": search,
-                "number": 6,
-            },
-        )
-        response_data = resp.json()
-        if not response_data:
-            return redirect("/api/limit"), 402
+    if not search:
+        flash("Must have a Search Term", "warning")
+        return redirect("/")
 
-        return render_template("/api/search.html", data=response_data, search=search)
-
-    else:
-        flash("Error must be logged in", "warning")
-        return redirect("/login")
+    resp = requests.get(
+        "https://api.spoonacular.com/recipes/complexSearch",
+        params={
+            "apiKey": api_key,
+            "query": search,
+            "number": 6,
+        },
+    )
+    friends_recipe_id = [friend.id for friend in g.friends]
+    response_data = resp.json()
+    recipes = Recipe.query.filter(
+        Recipe.name.ilike(f"%{search}%"),
+        or_(Recipe.user_id == g.user.id, Recipe.user_id.in_(friends_recipe_id)),
+    ).all()
+    return render_template(
+        "/api/search.html", data=response_data, search=search, recipes=recipes
+    )
 
 
 @app.route("/api/recipe/<int:recipe_id>")
@@ -269,9 +312,7 @@ def show_api_recipe(recipe_id):
     """Shows the full details of the recipe. If a user would like to add the recipe
     to their cook book there will be a button that says add to my cook book.
     this will copy the recipe into my database and show it along with the user"""
-    if not g.user:
-        flash("Unauthorized", "danger")
-        return redirect("/")
+    check_user()
 
     resp = requests.get(
         f"https://api.spoonacular.com/recipes/{recipe_id}/information",
@@ -306,9 +347,7 @@ def add_api_recipe(recipe_id):
     ideal but with a free api this is what I have to work with
     we basically use the data to setup a recipe as it would be in my database.
     then it removes the recipes from the session"""
-    if not g.user:
-        flash("Unauthorized", "danger")
-        return redirect("/")
+    check_user()
     try:
         resp = requests.get(
             f"https://api.spoonacular.com/recipes/{recipe_id}/information",
@@ -363,13 +402,53 @@ def add_api_recipe(recipe_id):
 @app.route("/recipe/add", methods=["GET", "POST"])
 def add_recipe():
     """Lets the user add their own custom recipe to their cookbook"""
-    if g.user:
-        form = NewRecipeForm()
+    check_user()
+    form = NewRecipeForm()
 
-        if form.validate_on_submit():
-            ingredients = json.dumps(form.ingredients.data)
-            directions = json.dumps(form.directions.data)
+    if form.validate_on_submit():
+        ingredients = json.dumps(form.ingredients.data)
+        directions = json.dumps(form.directions.data)
 
+        letters = string.ascii_letters
+        filename = f"{g.user.name}" + "".join(random.choice(letters) for i in range(10))
+        form.picture.data.filename = filename
+        cloudinary.uploader.upload(
+            form.picture.data,
+            public_id=f"recipes/{filename}",
+            resource_type="image",
+        )
+        image = str(CloudinaryImage(f"/recipes/{filename}"))
+        recipe = Recipe(
+            name=form.name.data,
+            description=form.description.data,
+            picture=f"{IMAGE_URL}{image}",
+            image_id=filename,
+            homemade=True,
+            ingredients=ingredients,
+            directions=directions,
+            created_by=g.user.name,
+            user_id=g.user.id,
+            category=form.category.data,
+        )
+        db.session.add(recipe)
+        db.session.commit()
+        flash("Recipe Successfully Added!", "success")
+        return redirect(f"/recipe/{recipe.id}")
+    return render_template("recipes/newrecipe.html", form=form)
+
+
+@app.route("/recipe/<int:id>/edit", methods=["GET", "POST"])
+def edit_recipe(id):
+    check_user()
+    form = EditRecipeForm()
+    recipe = Recipe.query.get_or_404(id)
+
+    if form.validate_on_submit():
+        ingredients = json.dumps(form.ingredients.data)
+        directions = json.dumps(form.directions.data)
+        if form.picture.data:
+            # Edits the picture only if a picture has been uploaded with the request. Otherwise it doesn't change anything
+            cloudinary.uploader.destroy(f"recipe/{recipe.image_id}", invalidate=True)
             letters = string.ascii_letters
             filename = f"{g.user.name}" + "".join(
                 random.choice(letters) for i in range(10)
@@ -381,88 +460,36 @@ def add_recipe():
                 resource_type="image",
             )
             image = str(CloudinaryImage(f"/recipes/{filename}"))
-            recipe = Recipe(
-                name=form.name.data,
-                description=form.description.data,
-                picture=f"{IMAGE_URL}{image}",
-                image_id=filename,
-                homemade=True,
-                ingredients=ingredients,
-                directions=directions,
-                created_by=g.user.name,
-                user_id=g.user.id,
-                category=form.category.data,
-            )
-            db.session.add(recipe)
-            db.session.commit()
-            flash("Recipe Successfully Added!", "success")
-            return redirect(f"/recipe/{recipe.id}")
-        return render_template("recipes/newrecipe.html", form=form)
+            recipe.picture = f"{IMAGE_URL}{image}"
+            recipe.image_id = filename
+        recipe.name = form.name.data
+        recipe.description = form.description.data
+        recipe.ingredients = ingredients
+        recipe.directions = directions
+        recipe.category = form.category.data
+        db.session.add(recipe)
+        db.session.commit()
+        flash("Recipe Successfully Edited", "success")
+        return redirect(f"/recipe/{recipe.id}")
     else:
-        flash("Error must be logged in", "warning")
-        return redirect("/login")
-
-
-@app.route("/recipe/<int:id>/edit", methods=["GET", "POST"])
-def edit_recipe(id):
-    if g.user:
-        form = EditRecipeForm()
-        recipe = Recipe.query.get_or_404(id)
-
-        if form.validate_on_submit():
-            ingredients = json.dumps(form.ingredients.data)
-            directions = json.dumps(form.directions.data)
-            if form.picture.data:
-                # Edits the picture only if a picture has been uploaded with the request. Otherwise it doesn't change anything
-                cloudinary.uploader.destroy(
-                    f"recipe/{recipe.image_id}", invalidate=True
-                )
-                letters = string.ascii_letters
-                filename = f"{g.user.name}" + "".join(
-                    random.choice(letters) for i in range(10)
-                )
-                form.picture.data.filename = filename
-                cloudinary.uploader.upload(
-                    form.picture.data,
-                    public_id=f"recipes/{filename}",
-                    resource_type="image",
-                )
-                image = str(CloudinaryImage(f"/recipes/{filename}"))
-                recipe.picture = f"{IMAGE_URL}{image}"
-                recipe.image_id = filename
-            recipe.name = form.name.data
-            recipe.description = form.description.data
-            recipe.ingredients = ingredients
-            recipe.directions = directions
-            recipe.category = form.category.data
-            db.session.add(recipe)
-            db.session.commit()
-            flash("Recipe Successfully Edited", "success")
-            return redirect(f"/recipe/{recipe.id}")
-        else:
-            ingredients = json.loads(recipe.ingredients)
-            directions = json.loads(recipe.directions)
-            form.name.data = recipe.name
-            form.description.data = recipe.description
-            form.directions.pop_entry()
-            for part in directions:
-                form.directions.append_entry(part)
-            form.ingredients.pop_entry()
-            for part in ingredients:
-                form.ingredients.append_entry(part)
-            form.category.data = recipe.category
-            return render_template("recipes/editrecipe.html", form=form)
-    else:
-        flash("Error must be logged in", "warning")
-        return redirect("/login")
+        ingredients = json.loads(recipe.ingredients)
+        directions = json.loads(recipe.directions)
+        form.name.data = recipe.name
+        form.description.data = recipe.description
+        form.directions.pop_entry()
+        for part in directions:
+            form.directions.append_entry(part)
+        form.ingredients.pop_entry()
+        for part in ingredients:
+            form.ingredients.append_entry(part)
+        form.category.data = recipe.category
+        return render_template("recipes/editrecipe.html", form=form)
 
 
 @app.route("/recipe/<int:id>")
 def recipe_view(id):
     """Displays a recipe in the database to a user"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     recipe = Recipe.query.get_or_404(id)
     ingredients = json.loads(recipe.ingredients)
     directions = json.loads(recipe.directions)
@@ -476,9 +503,7 @@ def recipe_view(id):
 
 @app.route("/recipe/<int:id>/delete")
 def delete_recipe(id):
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     recipe = Recipe.query.get_or_404(id)
     if recipe.user_id == g.user.id:
         cloudinary.uploader.destroy(f"recipes/{recipe.image_id}", invalidate=True)
@@ -496,9 +521,7 @@ def delete_recipe(id):
 @app.get("/friends/requests")
 def friend_requests():
     """Finds all the friend requests that have been sent"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     if g.friend_request:
         f_requests = Friend.query.filter(
             Friend.user_request_received_id == g.user.id,
@@ -516,9 +539,7 @@ def friend_requests():
 @app.route("/friends/requests/<id>")
 def accept_decline_friend(id):
     """Accepts or declines a friend request"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
     if g.friend_request:
         try:
             choice = request.args.get("a")
@@ -547,9 +568,9 @@ def accept_decline_friend(id):
 @app.route("/friends/add", methods=["GET", "POST"])
 def add_friend():
     """Creates the form which allows users to add friends"""
-    if not g.user:
-        flash("Must be logged in", "danger")
-        return redirect("/login")
+    check_user()
+    j_form_title = "Add A Friend"
+    j_form_btn = "Send Request"
     form = AddFriend()
 
     if form.validate_on_submit():
@@ -560,4 +581,9 @@ def add_friend():
         except:
             flash("You've already added that user!", "warning")
             return redirect("/friends/add")
-    return render_template("/friends/add.html", form=form)
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )

@@ -40,7 +40,6 @@ class SignUp(FlaskForm):
         "Confirm Password", validators=[Length(min=6, max=50)]
     )
 
-    # TODO FIX PASSWORD VALIDATION
     def validate_password(self, password):
         EXCLUDED_CHARS = " "
         for char in self.password.data:
@@ -73,6 +72,21 @@ class EditUser(FlaskForm):
             Length(min=6, max=50),
             DataRequired(),
         ],
+    )
+
+
+class ChangePassword(FlaskForm):
+    curr_password = PasswordField("Current Password", validators=[DataRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[
+            Length(min=6, max=50),
+            EqualTo("password_confirm", message="Passwords don't match"),
+            DataRequired(),
+        ],
+    )
+    password_confirm = PasswordField(
+        "Confirm Password", validators=[Length(min=6, max=50)]
     )
 
 
