@@ -134,6 +134,8 @@ def signup():
     If a email already exists return an error"""
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+    j_form_title = "Sign Up"
+    j_form_btn = "Sign Up"
     form = SignUp()
 
     if form.validate_on_submit():
@@ -155,13 +157,19 @@ def signup():
         return redirect("/")
 
     else:
-        return render_template("/signup.html", form=form)
+        return render_template(
+            "/forms_base.html",
+            form=form,
+            j_form_title=j_form_title,
+            j_form_btn=j_form_btn,
+        )
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Logs in a user and checks their credentials"""
-
+    j_form_title = "Login"
+    j_form_btn = "Login"
     form = Login()
 
     if form.validate_on_submit():
@@ -173,7 +181,9 @@ def login():
             return redirect("/")
 
         flash("Invalid email or password", "danger")
-    return render_template("/login.html", form=form)
+    return render_template(
+        "/forms_base.html", form=form, j_form_title=j_form_title, j_form_btn=j_form_btn
+    )
 
 
 #########################################################################
@@ -241,6 +251,8 @@ def edit_profile():
 def change_password():
     """Allows the user to change their password. Takes their current password and a new password"""
     check_user()
+    j_form_title = "Change Your Password"
+    j_form_btn = "Change"
     form = ChangePassword()
     if form.validate_on_submit():
         user = User.authenticate(g.user.email, form.curr_password.data)
@@ -253,7 +265,12 @@ def change_password():
         flash("Incorrect Password", "warning")
         return redirect("/password")
 
-    return render_template("change_password.html", form=form)
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )
 
 
 #############################################################################
