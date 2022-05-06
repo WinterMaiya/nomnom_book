@@ -11,7 +11,7 @@ block content %}
 			<div class="col text-center my-2">
 				<a href="/profile">
 					<img
-						class="rounded-circle z-depth-2 c_image"
+						class="shadow rounded-circle z-depth-2 c_image"
 						alt="40x40"
 						src="{{g.user.profile_pic}}"
 						data-holder-rendered="true"
@@ -24,7 +24,7 @@ block content %}
 
 			<div class="col text-center my-2">
 				<img
-					class="rounded-circle z-depth-2 c_image"
+					class="shadow rounded-circle z-depth-2 c_image"
 					alt="40x40"
 					src="{{friend.profile_pic}}"
 					data-holder-rendered="true"
@@ -62,7 +62,7 @@ block content %}
 			<div class="col">
 				<div class="dropdown text-center">
 					<button
-						class="btn btn-secondary dropdown-toggle c_category text-dark"
+						class="shadow btn btn-secondary dropdown-toggle c_category text-dark"
 						type="button"
 						id="dropdownMenuButton2"
 						data-bs-toggle="dropdown"
@@ -120,7 +120,7 @@ block content %}
 			{% for recipe in recipes %}
 			<div class="col c_{{recipe.category}} c_recipes">
 				<!-- visually-hidden -->
-				<div class="card my-2">
+				<div class="shadow card my-2">
 					<div class="card-header text-start">
 						{{recipe.category | capitalize}}
 					</div>
