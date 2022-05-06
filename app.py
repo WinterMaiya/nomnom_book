@@ -578,6 +578,8 @@ def accept_decline_friend(id):
 def add_friend():
     """Creates the form which allows users to add friends"""
     check_user()
+    j_form_title = "Add A Friend"
+    j_form_btn = "Send Request"
     form = AddFriend()
 
     if form.validate_on_submit():
@@ -588,4 +590,9 @@ def add_friend():
         except:
             flash("You've already added that user!", "warning")
             return redirect("/friends/add")
-    return render_template("/friends/add.html", form=form)
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )
