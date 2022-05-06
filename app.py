@@ -13,7 +13,7 @@ import string
 from cloudinary import CloudinaryImage
 from flask import Flask, render_template, g, redirect, session, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from sqlalchemy.exc import IntegrityError
 from secret import s_api_key, s_cloud_api_key, s_cloud_api_secret, s_cloud_name
 from models import User, connect_db, db, Friend, Recipe
@@ -27,7 +27,6 @@ from forms import (
     EditRecipeForm,
     ChangePassword,
 )
-from werkzeug.utils import secure_filename
 
 IMAGE_URL = (
     "https://res.cloudinary.com/grandsloth/image/upload/w_1000,ar_1:1,c_fill,g_auto"
@@ -279,9 +278,10 @@ def change_password():
 
 @app.route("/search")
 def search():
-    """Allows the user to search. If the limit on the api is reached display a 402 error page"""
+    """Allows the user to search returns recipes in the users cookbook as well as recipes from the api"""
     if g.user:
         search = request.args.get("q")
+        print(search)
 
         if not search:
             flash("Must have a Search Term", "warning")
@@ -295,11 +295,15 @@ def search():
                 "number": 6,
             },
         )
+        friends_recipe_id = [friend.id for friend in g.friends]
         response_data = resp.json()
-        if not response_data:
-            return redirect("/api/limit"), 402
-
-        return render_template("/api/search.html", data=response_data, search=search)
+        recipes = Recipe.query.filter(
+            Recipe.name.ilike(f"%{search}%"),
+            or_(Recipe.user_id == g.user.id, Recipe.user_id.in_(friends_recipe_id)),
+        ).all()
+        return render_template(
+            "/api/search.html", data=response_data, search=search, recipes=recipes
+        )
 
     else:
         flash("Error must be logged in", "warning")

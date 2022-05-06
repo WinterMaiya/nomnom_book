@@ -1,12 +1,35 @@
 {% extends 'base.html' %} {% block content %}
 <div class="text-center">
-	<h2 class="display-6">
+	<h2 class="display-5">
 		Searched for: <u><i>{{search}}</i></u>
 	</h2>
 </div>
 <div class="container">
-	<div class="row justify-content-center">
-		{% for recipe in data.results %}
+	<div class="row row-cols">
+		{% for recipe in recipes %}
+		<div class="col col-lg-4">
+			<div class="card shadow text-center display-6 m-2">
+				<h3 class="card-header">{{recipe.name | capitalize}}</h3>
+				<img
+					class="img-fluid"
+					src="{{recipe.picture}}"
+					alt="{{recipe.name}}-image"
+				/>
+				<div class="card-body">
+					<p class="fs-5">Created By: {{recipe.created_by | capitalize}}</p>
+					{% if not recipe.homemade %}
+					<p class="fs-5">Added By: {{recipe.user.name | capitalize}}</p>
+					{% endif %}
+					<a href="/api/recipe/{{recipe.id}}" class="btn btn-primary"
+						>View Recipe</a
+					>
+				</div>
+			</div>
+		</div>
+	</div>
+	<h3 class="display-6 text-center underline">More Results:</h3>
+	<div class="row row-cols">
+		{% endfor %} {% for recipe in data.results %}
 		<div class="col col-lg-4">
 			<div class="card shadow text-center display-6 m-2">
 				<h3 class="card-header">{{recipe.title}}</h3>
@@ -17,7 +40,7 @@
 				/>
 				<div class="card-body">
 					<a href="/api/recipe/{{recipe.id}}" class="btn btn-primary"
-						>View Recipe</a
+						>Try Recipe</a
 					>
 				</div>
 			</div>

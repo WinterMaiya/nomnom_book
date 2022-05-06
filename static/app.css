@@ -60,7 +60,7 @@ body {
 	padding-top: 90px;
 	background: white;
 	background: linear-gradient(top, #ffffff, rgba(255, 238, 224));
-	margin-bottom: 90px;
+	padding-bottom: 100px;
 }
 
 .c_image {
