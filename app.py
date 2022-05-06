@@ -539,7 +539,6 @@ def friend_requests():
             user = User.query.get(req.user_request_sent_id)
             data.append(user)
         return render_template("/friends/requests.html", requests=f_requests, data=data)
-    flash("No friend requests at the moment", "warning")
     return redirect("/")
 
 
