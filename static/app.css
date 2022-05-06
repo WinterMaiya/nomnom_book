@@ -38,7 +38,7 @@ html {
 
 body {
 	padding-top: 90px;
-	background: rgba(255, 238, 224);
+	background: white;
 	background: linear-gradient(top, #ffffff, rgba(255, 238, 224));
 }
 
