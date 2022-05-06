@@ -74,11 +74,13 @@ function ingredientButton() {
 	addIngredientButton.classList.add("btn");
 	addIngredientButton.classList.add("btn-secondary");
 	addIngredientButton.classList.add("my-2");
+	addIngredientButton.classList.add("shadow");
 	addIngredientButton.classList.add("mx-2");
 	addIngredientButton.innerText = "Add Ingredient";
 	let ingredientsSection = document.getElementById("ingredients").parentElement;
 	deleteButton.classList.add("btn");
 	deleteButton.classList.add("btn-danger");
+	deleteButton.classList.add("shadow");
 	deleteButton.classList.add("my-2");
 	deleteButton.innerText = "Delete";
 	// Styles the first element to make it show up correctly
@@ -130,10 +132,12 @@ function directionsButton() {
 	addDirectionButton.classList.add("btn-secondary");
 	addDirectionButton.classList.add("my-2");
 	addDirectionButton.classList.add("mx-2");
+	addDirectionButton.classList.add("shadow");
 	addDirectionButton.innerText = "Add Direction";
 	deleteButton.classList.add("btn");
 	deleteButton.classList.add("btn-danger");
 	deleteButton.classList.add("my-2");
+	deleteButton.classList.add("shadow");
 	deleteButton.innerText = "Delete";
 	// Styles the first element to make it show up correctly
 	let directionsSection = document.getElementById("directions").parentElement;
