@@ -7,12 +7,13 @@
 			'hidden' %}
 			<div class="form-group">
 				<label for="{{field.label.text}}">{{field.label.text}}</label>
-				{{field(placeholder=field.label.text, class="form-control my-2") }}
+				{{field(placeholder=field.label.text, class="shadow form-control my-2")
+				}}
 			</div>
 			{% for error in field.errors %}
 			<div class="text-danger form-text">{{ error }}</div>
 			{% endfor %} {% endfor %}
-			<button type="submit" class="btn btn-primary">Login</button>
+			<button type="submit" class="shadow btn btn-primary">Login</button>
 		</form>
 	</div>
 </div>

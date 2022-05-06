@@ -6,7 +6,7 @@
 				<img
 					src="{{data.picture}}"
 					alt="{{data.title}}"
-					class="img-fluid"
+					class="shadow img-fluid"
 					style="max-width: 500px"
 				/>
 			</div>
@@ -17,8 +17,12 @@
 			<h1 class="text-center display-2">{{data.name | capitalize}}</h1>
 			{% if g.user.id == data.user_id %}
 			<div class="text-center py-2">
-				<a class="btn btn-primary" href="/recipe/{{data.id}}/edit">Edit</a>
-				<a class="btn btn-danger" href="/recipe/{{data.id}}/delete">Delete</a>
+				<a class="btn btn-primary shadow" href="/recipe/{{data.id}}/edit"
+					>Edit</a
+				>
+				<a class="btn btn-danger shadow" href="/recipe/{{data.id}}/delete"
+					>Delete</a
+				>
 			</div>
 			{% endif %}
 			<div class="text-center">
