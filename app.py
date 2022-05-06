@@ -207,6 +207,13 @@ def homepage():
         return render_template("/index.html")
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    """Custom 404 page not found error"""
+
+    return render_template("404.html"), 404
+
+
 @app.route("/profile", methods=["GET", "POST"])
 def edit_profile():
     """Allows the user to edit their profile. Also has links to changing your password"""
