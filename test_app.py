@@ -341,6 +341,23 @@ class TestApp(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Homemade yum yum", str(resp.data))
 
+    def test_add_recipe_url(self):
+        """If this test fails double check that we haven't excceded our api limit"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/api/external")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Add A Recipe", str(resp.data))
+
+            data = {
+                "url": "https://foodista.com/recipe/ZHK4KPB6/chocolate-crinkle-cookies"
+            }
+            resp = c.post("/api/external", follow_redirects=True, data=data)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Cookbook", str(resp.data))
+            self.assertIn("Cookies", str(resp.data))
+
     def test_404(self):
         with self.client as c:
             resp = c.get("/notaroute")

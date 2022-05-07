@@ -413,7 +413,7 @@ def add_recipe_from_url():
         flash("Must be logged in", "danger")
         return redirect("/login")
     form = RecipeFromWebsite()
-    j_form_title = "Add A Recipe from a website!"
+    j_form_title = "Add A Recipe from a Website!"
     j_form_btn = "Add Recipe"
 
     if form.validate_on_submit():
