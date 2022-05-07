@@ -737,6 +737,18 @@ def accept_decline_friend(id):
         return redirect("/friends/requests")
 
 
+def send_friend_request_email(friend):
+    """Creates the email to send a user"""
+    msg = Message(
+        f"{g.user.name} sent you a friend request",
+        sender=os.environ.get("MAIL_USERNAME", s_email_username),
+        recipients=[friend.email],
+    )
+    msg.body = f"""{g.user.name} has sent you a friend request. To accept login here:
+    {url_for("/", _external=True)}"""
+    mail.send(msg)
+
+
 @app.route("/friends/add", methods=["GET", "POST"])
 def add_friend():
     """Creates the form which allows users to add friends"""
@@ -750,6 +762,9 @@ def add_friend():
     if form.validate_on_submit():
         try:
             Friend.send_request(self_email=g.user.email, friend_email=form.email.data)
+            friend = User.query.filter_by(email=form.email.data).first()
+            if friend:
+                send_friend_request_email(friend)
             flash("Thanks! We'll send that user a request", "success")
             return redirect("/friends/add")
         except:

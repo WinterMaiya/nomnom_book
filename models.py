@@ -42,7 +42,6 @@ class Friend(db.Model):
     def send_request(cls, self_email, friend_email):
         """This will send an email to the user saying that a friend request has been sent
         If the user accepts it then the accepted boolean will change to True"""
-        # TODO: Set up flask email
 
         sender = User.query.filter_by(email=self_email).first()
         receiver = User.query.filter_by(email=friend_email).first()
