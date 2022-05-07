@@ -152,3 +152,25 @@ class EditRecipeForm(FlaskForm):
 
 class AddFriend(FlaskForm):
     email = EmailField("Friends Email", validators=[DataRequired()])
+
+
+class RecipeFromWebsite(FlaskForm):
+    url = StringField("Recipe URL", validators=[DataRequired()])
+
+
+class ResetPassword(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired()])
+
+
+class ResetPasswordChange(FlaskForm):
+    password = PasswordField(
+        "Password",
+        validators=[
+            Length(min=6, max=50),
+            EqualTo("password_confirm", message="Passwords don't match"),
+            DataRequired(),
+        ],
+    )
+    password_confirm = PasswordField(
+        "Confirm Password", validators=[Length(min=6, max=50)]
+    )

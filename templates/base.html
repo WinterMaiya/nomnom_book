@@ -41,7 +41,7 @@
 						>
 							<div class="offcanvas-header bg-light">
 								<h5
-									class="offcanvas-title text-center"
+									class="offcanvas-title text-light text-center"
 									id="offcanvasNavbarLabel"
 								>
 									The NomNom Book
@@ -111,11 +111,11 @@
 													>Add a New Recipe</a
 												>
 											</li>
-											<!-- <li>
-												<a class="dropdown-item" href="#"
-													>Add a Recipe from a Website WIP</a
+											<li>
+												<a class="dropdown-item" href="/api/external"
+													>Add a Recipe from a Website</a
 												>
-											</li> -->
+											</li>
 											<li>
 												<a class="dropdown-item" href="/friends/add"
 													>Find a Friend</a
@@ -146,11 +146,11 @@
 											>Add a New Recipe</a
 										>
 									</li>
-									<!-- <li class="nav-item search-sm">
-												<a class="dropdown-item" href="#"
-													>Add a Recipe from a Website WIP</a
-												>
-											</li> -->
+									<li class="nav-item search-sm">
+										<a class="dropdown-item" href="/api/external"
+											>Add a Recipe from a Website</a
+										>
+									</li>
 									<li class="nav-item search-sm">
 										<a class="nav-link active" href="/friends/add"
 											>Find a Friend</a
@@ -163,7 +163,7 @@
 										<input
 											class="form-control me-2"
 											type="search"
-											placeholder="Find New Recipes"
+											placeholder="Search Recipes"
 											aria-label="Search"
 											name="q"
 											id="q"
@@ -180,12 +180,14 @@
 				</nav>
 			</div>
 		</header>
-		<div class="container">
-			{% for category, message in get_flashed_messages(with_categories=True) %}
-			<div class="alert alert-{{ category }}">{{ message }}</div>
-			{% endfor %}
-		</div>
+
 		<main>
+			<div class="container">
+				{% for category, message in get_flashed_messages(with_categories=True)
+				%}
+				<div class="alert alert-{{ category }}">{{ message }}</div>
+				{% endfor %}
+			</div>
 			{% block content %}
 			<!-- Contents for Jinja -->
 			{% endblock content %}

@@ -3,12 +3,15 @@ import os
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from secret import s_pepper
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 pepper = os.environ.get("PEPPER", s_pepper)
 
 DEFAULT_PROFILE_PIC = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+
+secret_key_token = os.environ.get("SECRET_KEY_TOKEN", "itsasecret")
 
 
 class Friend(db.Model):
@@ -39,7 +42,6 @@ class Friend(db.Model):
     def send_request(cls, self_email, friend_email):
         """This will send an email to the user saying that a friend request has been sent
         If the user accepts it then the accepted boolean will change to True"""
-        # TODO: Set up flask email
 
         sender = User.query.filter_by(email=self_email).first()
         receiver = User.query.filter_by(email=friend_email).first()
@@ -132,8 +134,25 @@ class User(db.Model):
 
     @classmethod
     def change_password(cls, password):
+        """Allows the user to change password and encrypt it"""
         encrypt_pwd = bcrypt.generate_password_hash(password + pepper).decode("UTF-8")
         return encrypt_pwd
+
+    def get_reset_password(self):
+        """Creates secure key for user to reset password"""
+
+        s = Serializer(secret_key_token)
+        return s.dumps({"user_id": self.id})
+
+    @staticmethod
+    def verify_reset_password(token, expires_sec=1800):
+        """Verifies the token is correct if not return None"""
+        s = Serializer(secret_key_token)
+        try:
+            user_id = s.loads(token, expires_sec)["user_id"]
+            return User.query.get(user_id)
+        except:
+            return None
 
 
 class Recipe(db.Model):

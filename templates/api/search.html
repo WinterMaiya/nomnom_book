@@ -26,10 +26,12 @@
 				</div>
 			</div>
 		</div>
+		{% endfor %}
 	</div>
+
 	<h3 class="display-6 text-center underline">More Results:</h3>
 	<div class="row row-cols">
-		{% endfor %} {% for recipe in data.results %}
+		{% for recipe in data.results %}
 		<div class="col col-lg-4">
 			<div class="card shadow text-center display-6 m-2">
 				<h3 class="card-header">{{recipe.title}}</h3>

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}{% block content %}
 <div class="container my-4">
-	<div class="row">
+	<div class="row row-cols">
 		{% for request in data %}
-		<div class="col-lg-2 text-center">
+		<div class="col-3 text-center">
 			<div class="card shadow">
 				<div class="card-body text-center">
 					<div class="card-title">{{request.name}}</div>
@@ -19,7 +19,7 @@
 					</form>
 					<form action="/friends/requests/{{request.id}}?a=false" method="GET">
 						<input type="hidden" name="a" value="false" />
-						<button type="submit" class="btn btn-warning">Decline</button>
+						<button type="submit" class="btn btn-danger">Decline</button>
 					</form>
 				</div>
 			</div>

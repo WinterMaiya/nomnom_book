@@ -1,20 +1,20 @@
 # Test Files for all functions
-from multiprocessing.sharedctypes import Value
+# Random Issue, whenever you run a test if you want to run the app normally you will have to
+# clear your entire cache before it"ll open otherwise you'll get 404 errors
 import os
 import json
 from unittest import TestCase
 from sqlalchemy import exc, or_
 
-from models import db, connect_db, User, Friend, Recipe, DEFAULT_PROFILE_PIC
-from bs4 import BeautifulSoup
-
-os.environ["DATABASE_URL"] = "postgresql:///nomnom_test"
+from models import db, User, Friend, Recipe, DEFAULT_PROFILE_PIC
 
 from app import app, CURR_USER_KEY
 
 db.create_all()
 
 app.config["WTF_CSRF_ENABLED"] = False
+os.environ["DATABASE_URL"] = "postgresql:///nomnom_test"
+# app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
 
 
 class TestApp(TestCase):
@@ -54,7 +54,7 @@ class TestApp(TestCase):
 
         # Adds in a test recipe
         self.recipe1 = Recipe(
-            name="Fish Tacos",
+            name="Florper",
             description="A delicious recipe",
             picture="",
             homemade=True,
@@ -65,8 +65,15 @@ class TestApp(TestCase):
             category="main",
             user_id=1,
         )
-
         db.session.add(self.recipe1)
+        self.add_friend = Friend(
+            user_request_sent_id=2, user_request_received_id=1, accepted=True
+        )
+        db.session.add(self.add_friend)
+        self.add_friend_request = Friend(
+            user_request_sent_id=3, user_request_received_id=1, accepted=False
+        )
+        db.session.add(self.add_friend_request)
         db.session.commit()
 
     def tearDown(self):
@@ -165,8 +172,6 @@ class TestApp(TestCase):
         self.assertIsNotNone(f_requests)
         self.assertEqual(f_requests.user_request_sent_id, self.testfriend1.id)
 
-        self.assertEqual(self.testfriend2.friends, [])
-
         f_requests.accepted = True
         db.session.add(f_requests)
         db.session.commit()
@@ -188,3 +193,254 @@ class TestApp(TestCase):
 
         self.assertIsNotNone(data)
         self.assertEqual(data, [self.testfriend1])
+
+    def test_search(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/search?q=florp")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Florper", str(resp.data))
+
+    def test_cookbook(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn("Create a community cookbook today!", str(resp.data))
+            self.assertIn("Florper", str(resp.data))
+            self.assertIn("Chihiro", str(resp.data))
+
+    def test_homepage(self):
+        with self.client as c:
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Create a community cookbook today!", str(resp.data))
+
+    def test_recipe(self):
+        with self.client as c:
+            resp = c.get("/recipe/1")
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Florper", str(resp.data))
+
+    def test_recipe_delete(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/recipe/1/delete", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Successfully Deleted the Recipe", str(resp.data))
+
+    def test_recipe_delete_unauthorized(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 3
+
+            resp = c.get("/recipe/1/delete", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn("Successfully Deleted the Recipe", str(resp.data))
+
+    def test_recipe_edit(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("recipe/1/edit")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(
+                '<script src="/static/editrecipe.js"></script>', str(resp.data)
+            )
+            self.assertIn("Edit Recipe", str(resp.data))
+            self.assertIn("Florper", str(resp.data))
+            self.assertIn("A delicious recipe", str(resp.data))
+
+    def test_recipe_edit_unauthorized(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 2
+
+            resp = c.get("recipe/1/edit")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_recipe_add(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/recipe/add")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("/static/newrecipe.js", str(resp.data))
+            self.assertIn("New Recipe", str(resp.data))
+
+    def test_friend_requests(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/friends/requests")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Angel", str(resp.data))
+            resp = c.get("/friends/requests/3?a=true", follow_redirects=True)
+            self.assertIn("Cookbook", str(resp.data))
+            self.assertIn("Angel", str(resp.data))
+
+    def test_friend_requests_decline(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/friends/requests")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Angel", str(resp.data))
+            resp = c.get("/friends/requests/3?a=false", follow_redirects=True)
+            self.assertIn("Cookbook", str(resp.data))
+            self.assertNotIn("Angel", str(resp.data))
+
+    def test_add_friend(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 3
+            resp = c.get("/friends/add")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Add A Friend", str(resp.data))
+
+            data = {"email": "test1@test.com"}
+            resp = c.post("/friends/add", follow_redirects=True, data=data)
+            self.assertNotIn("Romeo", str(resp.data))
+            self.assertIn("Add A Friend", str(resp.data))
+
+    def test_change_password(self):
+        with self.client as c:
+            resp = c.get("/password")
+            self.assertEqual(resp.status_code, 302)
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/password")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Change Your Password", str(resp.data))
+
+    def test_edit_profile(self):
+        with self.client as c:
+            resp = c.get("/profile")
+            self.assertEqual(resp.status_code, 302)
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/profile")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Chihiro", str(resp.data))
+            self.assertIn("test@test.com", str(resp.data))
+            self.assertIn("Fish Oil", str(resp.data))
+
+            data = {
+                "name": "Bihiro",
+                "email": "fish@fish.com",
+                "favorite_food": "Chicken Oil",
+                "password": "Test12345!",
+            }
+            c.post("/profile", data=data)
+
+            # Check to see if information has changed
+            resp = c.get("/profile")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Bihiro", str(resp.data))
+            self.assertIn("fish@fish.com", str(resp.data))
+            self.assertIn("Chicken Oil", str(resp.data))
+
+    def test_api(self):
+        """If this test fails double check that we haven't excceded our api limit"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/api/recipe/1439063")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Homemade yum yum", str(resp.data))
+
+    def test_add_recipe_url(self):
+        """If this test fails double check that we haven't excceded our api limit"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/api/external")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Add A Recipe", str(resp.data))
+
+            data = {
+                "url": "https://foodista.com/recipe/ZHK4KPB6/chocolate-crinkle-cookies"
+            }
+            resp = c.post("/api/external", follow_redirects=True, data=data)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Cookbook", str(resp.data))
+            self.assertIn("Cookies", str(resp.data))
+
+    def test_404(self):
+        with self.client as c:
+            resp = c.get("/notaroute")
+            self.assertEqual(resp.status_code, 404)
+
+    def test_api_limit(self):
+        with self.client as c:
+            resp = c.get("/api/limit")
+            self.assertEqual(resp.status_code, 402)
+
+    def test_reset_password(self):
+        with self.client as c:
+            resp = c.get("/reset-password")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Reset Your Password", str(resp.data))
+            data = {"email": "test@test.com"}
+            resp = c.post("/reset-password", data=data, follow_redirects=True)
+            self.assertIn(
+                "We have sent that email instructions on how to reset your password.",
+                str(resp.data),
+            )
+
+    def test_reset_password_login(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/reset-password")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_reset_password_token(self):
+        with self.client as c:
+            resp = c.get("/reset-password/232323", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("That is an invalid or expired link", str(resp.data))
+            self.assertIn("Reset Your Password", str(resp.data))
+
+    def test_login_page(self):
+        with self.client as c:
+            resp = c.get("/login")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Login", str(resp.data))
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/login")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_signup_page(self):
+        with self.client as c:
+            resp = c.get("/signup")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Sign Up", str(resp.data))
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/signup")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_logout_page(self):
+        with self.client as c:
+            resp = c.get("/logout", follow_redirects=True)
+            self.assertIn("Must be logged in", str(resp.data))
+
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/logout", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("You have successfully logged out", str(resp.data))
+            self.assertIn("Login", str(resp.data))
