@@ -152,3 +152,7 @@ class EditRecipeForm(FlaskForm):
 
 class AddFriend(FlaskForm):
     email = EmailField("Friends Email", validators=[DataRequired()])
+
+
+class RecipeFromWebsite(FlaskForm):
+    url = StringField("Recipe URL", validators=[DataRequired()])

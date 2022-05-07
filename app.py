@@ -2,6 +2,7 @@
 # TODO: Add recipe from website
 # TODO: Add Reset Password
 # TODO: Add Tests
+from crypt import methods
 import os
 import requests
 import json
@@ -26,6 +27,7 @@ from forms import (
     EditUser,
     EditRecipeForm,
     ChangePassword,
+    RecipeFromWebsite,
 )
 
 IMAGE_URL = (
@@ -384,13 +386,6 @@ def add_api_recipe(recipe_id):
             ingredients.append(item["original"])
         for item in directions[0]["steps"]:
             direct.append(item["step"])
-        # This is to find the right category. Just finds the first most relevant one
-        for item in data["dishTypes"]:
-            if item in recipe_categories:
-                if item == "main course":
-                    category = "main"
-                category = item
-                break
         # Create the recipe and add it to the database
         recipe = Recipe(
             name=data["title"],
@@ -404,11 +399,71 @@ def add_api_recipe(recipe_id):
         )
         db.session.add(recipe)
         db.session.commit()
-        # Remove data from the session
         flash("Recipe added successfully", "success")
     except:
         flash("Sorry an error occurred when we tried to add the recipe", "warning")
     return redirect("/")
+
+
+@app.route("/api/external", methods=["GET", "POST"])
+def add_recipe_from_url():
+    """Allows the user to add a recipe from any website
+    if there is an error it will return a couldn't grab the recipe"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+    form = RecipeFromWebsite()
+    j_form_title = "Add A Recipe from a website!"
+    j_form_btn = "Add Recipe"
+
+    if form.validate_on_submit():
+        try:
+            resp = requests.get(
+                "https://api.spoonacular.com/recipes/extract",
+                params={"apiKey": api_key, "url": form.url.data},
+            )
+            data = resp.json()
+            if data["extendedIngredients"]:
+                ingredients = []
+                directions = []
+                direct = data["analyzedInstructions"]
+                for item in data["extendedIngredients"]:
+                    ingredients.append(item["original"])
+                for item in direct[0]["steps"]:
+                    directions.append(item["step"])
+                if data["summary"]:
+                    summary = data["summary"]
+                else:
+                    summary = f"Couldn't get the description. You can find and copy it from {data['sourceUrl']}"
+                recipe = Recipe(
+                    name=data["title"],
+                    description=summary,
+                    picture=data["image"],
+                    homemade=False,
+                    ingredients=json.dumps(ingredients),
+                    directions=json.dumps(directions),
+                    created_by=data["sourceName"],
+                    user_id=g.user.id,
+                )
+                db.session.add(recipe)
+                db.session.commit()
+                flash("Recipe Added Successfully!", "success")
+                return redirect("/")
+            else:
+                flash(
+                    "We had trouble adding that recipe, try again or add it manually",
+                    "warning",
+                )
+                return redirect("/api/external")
+        except:
+            return redirect("/api/limit")
+
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )
 
 
 ###############################################################################################################
