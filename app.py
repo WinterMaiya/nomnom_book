@@ -1,6 +1,4 @@
 # TODO: Edit Friends
-# TODO: Add Reset Password
-from crypt import methods
 import os
 import requests
 import json
@@ -10,11 +8,18 @@ import cloudinary.api
 import random
 import string
 from cloudinary import CloudinaryImage
-from flask import Flask, render_template, g, redirect, session, flash, request
+from flask import Flask, render_template, g, redirect, session, flash, request, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
-from secret import s_api_key, s_cloud_api_key, s_cloud_api_secret, s_cloud_name
+from secret import (
+    s_api_key,
+    s_cloud_api_key,
+    s_cloud_api_secret,
+    s_cloud_name,
+    s_email_username,
+    s_email_password,
+)
 from models import User, connect_db, db, Friend, Recipe
 from forms import (
     SignUp,
@@ -26,7 +31,10 @@ from forms import (
     EditRecipeForm,
     ChangePassword,
     RecipeFromWebsite,
+    ResetPassword,
+    ResetPasswordChange,
 )
+from flask_mail import Mail, Message
 
 IMAGE_URL = (
     "https://res.cloudinary.com/grandsloth/image/upload/w_1000,ar_1:1,c_fill,g_auto"
@@ -44,10 +52,15 @@ app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "Secret")
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = True
+app.config["MAIL_SERVER"] = "smtp.googlemail.com"
+app.config["MAIL_PORT"] = "587"
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME", s_email_username)
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD", s_email_password)
 toolbar = DebugToolbarExtension(app)
 
 api_key = os.environ.get("SPOON_API_KEY", s_api_key)
-
+mail = Mail(app)
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", s_cloud_name),
     api_key=os.environ.get("CLOUDINARY_API_KEY", s_cloud_api_key),
@@ -171,6 +184,7 @@ def login():
     """Logs in a user and checks their credentials"""
     j_form_title = "Login"
     j_form_btn = "Login"
+    j_form_reset = True
     form = Login()
 
     if form.validate_on_submit():
@@ -183,7 +197,11 @@ def login():
 
         flash("Invalid email or password", "danger")
     return render_template(
-        "/forms_base.html", form=form, j_form_title=j_form_title, j_form_btn=j_form_btn
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+        j_form_reset=j_form_reset,
     )
 
 
@@ -277,6 +295,78 @@ def change_password():
         flash("Incorrect Password", "warning")
         return redirect("/password")
 
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+    )
+
+
+def send_reset_email(user):
+    """Creates the email to send a user"""
+    token = user.get_reset_password()
+    msg = Message(
+        f"Password Reset Request",
+        sender=os.environ.get("MAIL_USERNAME", s_email_username),
+        recipients=[user.email],
+    )
+    msg.body = f"""We received a request to reset your password. 
+    To reset your password visit the folowing link:
+    {url_for("reset_password", token=token, _external=True)}
+    If you did not make this request then ignore this email. No changes will be made.
+    """
+    mail.send(msg)
+
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_request():
+    """Sends the user an Email to reset their password"""
+    if g.user:
+        flash("Must be logged out", "danger")
+        return redirect("/")
+    j_form_title = "Reset Your Password"
+    j_form_btn = "Send Request to Email"
+    j_form_reset = False
+    form = ResetPassword()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash(
+            "We have sent that email instructions on how to reset your password. If you don't get an email make sure to check your spam",
+            "info",
+        )
+        return redirect("/login")
+    return render_template(
+        "/forms_base.html",
+        form=form,
+        j_form_title=j_form_title,
+        j_form_btn=j_form_btn,
+        j_form_reset=j_form_reset,
+    )
+
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    """Verifies a token is correct. If it is allows the user to reset a password"""
+    if g.user:
+        flash("Must be logged out", "danger")
+        return redirect("/")
+    j_form_title = "Enter a New Password"
+    j_form_btn = "Reset"
+    user = User.verify_reset_password(token)
+    if not user:
+        # If link is not valid send a warning and redirect
+        flash("That is an invalid or expired link", "danger")
+        return redirect("/reset-password")
+
+    form = ResetPasswordChange()
+    if form.validate_on_submit():
+        user.password = User.change_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("Your Password has been changed! You may now login", "success")
+        return redirect("/login")
     return render_template(
         "/forms_base.html",
         form=form,
