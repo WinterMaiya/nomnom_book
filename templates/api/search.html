@@ -6,7 +6,7 @@
 </div>
 <div class="container">
 	<div class="row row-cols">
-		{% if recipe %} {% for recipe in recipes %}
+		{% for recipe in recipes %}
 		<div class="col col-lg-4">
 			<div class="card shadow text-center display-6 m-2">
 				<h3 class="card-header">{{recipe.name | capitalize}}</h3>
@@ -26,7 +26,7 @@
 				</div>
 			</div>
 		</div>
-		{% endfor %} {% endif %}
+		{% endfor %}
 	</div>
 
 	<h3 class="display-6 text-center underline">More Results:</h3>
