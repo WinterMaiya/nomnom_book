@@ -380,3 +380,10 @@ class TestApp(TestCase):
                 sess[CURR_USER_KEY] = 1
             resp = c.get("/reset-password")
             self.assertEqual(resp.status_code, 302)
+
+    def test_reset_password_token(self):
+        with self.client as c:
+            resp = c.get("/reset-password/232323", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("That is an invalid or expired link", str(resp.data))
+            self.assertIn("Reset Your Password", str(resp.data))
