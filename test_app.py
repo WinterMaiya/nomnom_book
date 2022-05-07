@@ -1,6 +1,6 @@
 # Test Files for all functions
-# Random Issue, whenever you run a test if you want to run the app normally you will have to
-# clear your entire cache before it"ll open otherwise you'll get 404 errors
+# Random Bug, whenever you run a test, if you want to run the app normally afterwards you will have to
+# clear your entire cache before, otherwise you'll get 404 errors for ever route
 import os
 import json
 from unittest import TestCase
