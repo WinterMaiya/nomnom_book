@@ -8,13 +8,13 @@ from sqlalchemy import exc, or_
 from models import db, connect_db, User, Friend, Recipe, DEFAULT_PROFILE_PIC
 from bs4 import BeautifulSoup
 
-os.environ["DATABASE_URL"] = "postgresql:///nomnom_test"
-
 from app import app, CURR_USER_KEY
 
 db.create_all()
 
 app.config["WTF_CSRF_ENABLED"] = False
+os.environ["DATABASE_URL"] = "postgresql:///nomnom_test"
+app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
 
 
 class TestApp(TestCase):
@@ -54,7 +54,7 @@ class TestApp(TestCase):
 
         # Adds in a test recipe
         self.recipe1 = Recipe(
-            name="Fish Tacos",
+            name="Florper",
             description="A delicious recipe",
             picture="",
             homemade=True,
@@ -65,8 +65,11 @@ class TestApp(TestCase):
             category="main",
             user_id=1,
         )
+        self.add_friend = Friend(
+            user_request_sent_id=1, user_request_received_id=2, accepted=True
+        )
 
-        db.session.add(self.recipe1)
+        db.session.add(self.recipe1, self.add_friend)
         db.session.commit()
 
     def tearDown(self):
@@ -188,3 +191,29 @@ class TestApp(TestCase):
 
         self.assertIsNotNone(data)
         self.assertEqual(data, [self.testfriend1])
+
+    def test_search(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/search?q=florp")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Florper", str(resp.data))
+            self.assertIn("")
+
+    def test_cookbook(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn("Create a community cookbook today!", str(resp.data))
+            self.assertIn("Florper", str(resp.data))
+            self.assertIn("Chihiro", str(resp.data))
+
+    def test_homepage(self):
+        with self.client as c:
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Create a community cookbook today!", str(resp.data))

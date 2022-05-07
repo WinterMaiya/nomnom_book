@@ -84,6 +84,7 @@ def add_user_to_g():
         ).all()
         data = []
         for req in friend_group:
+            # Runs through the data and appends friend searchs
             if req.user_request_sent_id != g.user.id:
                 friend_id = req.user_request_sent_id
             else:
@@ -289,7 +290,6 @@ def search():
     check_user()
 
     search = request.args.get("q")
-    print(search)
 
     if not search:
         flash("Must have a Search Term", "warning")
@@ -304,11 +304,11 @@ def search():
         },
     )
     friends_recipe_id = [friend.id for friend in g.friends]
-    response_data = resp.json()
     recipes = Recipe.query.filter(
         Recipe.name.ilike(f"%{search}%"),
         or_(Recipe.user_id == g.user.id, Recipe.user_id.in_(friends_recipe_id)),
     ).all()
+    response_data = resp.json()
     return render_template(
         "/api/search.html", data=response_data, search=search, recipes=recipes
     )
