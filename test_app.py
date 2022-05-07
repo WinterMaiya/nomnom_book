@@ -367,3 +367,16 @@ class TestApp(TestCase):
         with self.client as c:
             resp = c.get("/api/limit")
             self.assertEqual(resp.status_code, 402)
+
+    def test_reset_password(self):
+        with self.client as c:
+            resp = c.get("/reset-password")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Reset Your Password", str(resp.data))
+
+    def test_reset_password_login(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/reset-password")
+            self.assertEqual(resp.status_code, 302)
