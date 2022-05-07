@@ -6,8 +6,7 @@ import json
 from unittest import TestCase
 from sqlalchemy import exc, or_
 
-from models import db, connect_db, User, Friend, Recipe, DEFAULT_PROFILE_PIC
-from bs4 import BeautifulSoup
+from models import db, User, Friend, Recipe, DEFAULT_PROFILE_PIC
 
 from app import app, CURR_USER_KEY
 
