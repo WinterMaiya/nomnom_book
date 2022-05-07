@@ -1,4 +1,4 @@
-# TODO: Edit Friends
+# TODO: Remove Friend
 import os
 import requests
 import json
