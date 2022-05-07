@@ -134,7 +134,9 @@ def do_logout():
 @app.route("/logout")
 def logout():
     """Logs out the user"""
-
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/")
     do_logout()
 
     flash("You have successfully logged out!", "success")
@@ -143,6 +145,9 @@ def logout():
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+    if g.user:
+        flash("Must be logged out", "danger")
+        return redirect("/")
     """Logs in the user.
     Creates a user and adds them to the DB. Then redirect back to the homepage.
     If a email already exists return an error"""
@@ -182,6 +187,9 @@ def signup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Logs in a user and checks their credentials"""
+    if g.user:
+        flash("Must be logged out", "danger")
+        return redirect("/")
     j_form_title = "Login"
     j_form_btn = "Login"
     j_form_reset = True
@@ -330,8 +338,11 @@ def reset_request():
     j_form_reset = False
     form = ResetPassword()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            send_reset_email(user)
+        except:
+            pass
         flash(
             "We have sent that email instructions on how to reset your password. If you don't get an email make sure to check your spam",
             "info",
@@ -738,7 +749,8 @@ def accept_decline_friend(id):
 
 
 def send_friend_request_email(friend):
-    """Creates the email to send a user"""
+    """Creates the email to send a friend when someone has requested
+    only send an email if that user actually exists in the database"""
     msg = Message(
         f"{g.user.name} sent you a friend request",
         sender=os.environ.get("MAIL_USERNAME", s_email_username),

@@ -331,6 +331,24 @@ class TestApp(TestCase):
                 sess[CURR_USER_KEY] = 1
             resp = c.get("/profile")
             self.assertEqual(resp.status_code, 200)
+            self.assertIn("Chihiro", str(resp.data))
+            self.assertIn("test@test.com", str(resp.data))
+            self.assertIn("Fish Oil", str(resp.data))
+
+            data = {
+                "name": "Bihiro",
+                "email": "fish@fish.com",
+                "favorite_food": "Chicken Oil",
+                "password": "Test12345!",
+            }
+            c.post("/profile", data=data)
+
+            # Check to see if information has changed
+            resp = c.get("/profile")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Bihiro", str(resp.data))
+            self.assertIn("fish@fish.com", str(resp.data))
+            self.assertIn("Chicken Oil", str(resp.data))
 
     def test_api(self):
         """If this test fails double check that we haven't excceded our api limit"""
@@ -373,6 +391,12 @@ class TestApp(TestCase):
             resp = c.get("/reset-password")
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Reset Your Password", str(resp.data))
+            data = {"email": "test@test.com"}
+            resp = c.post("/reset-password", data=data, follow_redirects=True)
+            self.assertIn(
+                "We have sent that email instructions on how to reset your password.",
+                str(resp.data),
+            )
 
     def test_reset_password_login(self):
         with self.client as c:
@@ -387,3 +411,36 @@ class TestApp(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn("That is an invalid or expired link", str(resp.data))
             self.assertIn("Reset Your Password", str(resp.data))
+
+    def test_login_page(self):
+        with self.client as c:
+            resp = c.get("/login")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Login", str(resp.data))
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/login")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_signup_page(self):
+        with self.client as c:
+            resp = c.get("/signup")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Sign Up", str(resp.data))
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+            resp = c.get("/signup")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_logout_page(self):
+        with self.client as c:
+            resp = c.get("/logout", follow_redirects=True)
+            self.assertIn("Must be logged in", str(resp.data))
+
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("/logout", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("You have successfully logged out", str(resp.data))
+            self.assertIn("Login", str(resp.data))
