@@ -1,7 +1,5 @@
 # TODO: Edit Friends
-# TODO: Add recipe from website
 # TODO: Add Reset Password
-# TODO: Add Tests
 from crypt import methods
 import os
 import requests
