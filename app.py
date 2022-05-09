@@ -12,14 +12,23 @@ from flask import Flask, render_template, g, redirect, session, flash, request, 
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import or_, and_
 from sqlalchemy.exc import IntegrityError
-from secret import (
-    s_api_key,
-    s_cloud_api_key,
-    s_cloud_api_secret,
-    s_cloud_name,
-    s_email_username,
-    s_email_password,
-)
+
+try:
+    from secret import (
+        s_api_key,
+        s_cloud_api_key,
+        s_cloud_api_secret,
+        s_cloud_name,
+        s_email_username,
+        s_email_password,
+    )
+except:
+    s_api_key = None
+    s_cloud_api_key = None
+    s_cloud_api_secret = None
+    s_cloud_name = None
+    s_email_username = None
+    s_email_password = None
 from models import User, connect_db, db, Friend, Recipe
 from forms import (
     SignUp,

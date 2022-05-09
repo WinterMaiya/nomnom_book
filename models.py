@@ -2,7 +2,11 @@
 import os
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
-from secret import s_pepper
+
+try:
+    from secret import s_pepper
+except:
+    s_pepper = None
 from itsdangerous import URLSafeTimedSerializer as Serializer
 
 bcrypt = Bcrypt()
