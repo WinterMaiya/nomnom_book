@@ -1,0 +1,63 @@
+{% extends 'base.html' %}{% block content %}
+<div class="container my-4">
+	<div class="row row-cols">
+		{% for friend in data %}
+		<div class="col-lg-3 text-center">
+			<div class="card shadow">
+				<div class="card-body text-center">
+					<div class="card-title">{{friend.name | capitalize}}</div>
+					<img
+						class="rounded-circle z-depth-2 img-fluid"
+						style="width: 100px"
+						alt="40x40"
+						src="{{friend.profile_pic}}"
+						data-holder-rendered="true"
+					/>
+					<div class="card-text">
+						Favorite Food: {{friend.favorite_food | capitalize}}
+					</div>
+					<button
+						type="button"
+						class="btn btn-danger"
+						data-bs-toggle="modal"
+						data-bs-target="#confirmModal{{friend.id}}"
+						data-bs-whatever="{{friend.id}}"
+					>
+						Remove
+					</button>
+				</div>
+			</div>
+		</div>
+		<div
+			class="modal fade"
+			id="confirmModal{{friend.id}}"
+			tabindex="-1"
+			aria-labelledby="confirmModal{{friend.id}}Label"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content text-center">
+					<div class="modal-header">
+						<h5 class="modal-title" id="confirmModal{{friend.id}}Label">
+							Are you sure?
+						</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<form method="POST" action="/friends/{{friend.id}}/delete">
+							<button class="btn btn-danger">Remove Friend</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock content %}

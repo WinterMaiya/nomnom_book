@@ -1,4 +1,4 @@
-# TODO: Remove Friend
+# App for Nom Nom Book. A cookbook you can create with your friends
 import os
 import requests
 import json
@@ -10,7 +10,7 @@ import string
 from cloudinary import CloudinaryImage
 from flask import Flask, render_template, g, redirect, session, flash, request, url_for
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from sqlalchemy.exc import IntegrityError
 from secret import (
     s_api_key,
@@ -172,7 +172,7 @@ def signup():
             return render_template("/signup.html", form=form)
 
         do_login(user)
-        flash(f"Thanks for Signing up {user.name}!", "success")
+        flash(f"Thanks for signing up {user.name}!", "success")
         return redirect("/")
 
     else:
@@ -698,6 +698,46 @@ def delete_recipe(id):
 
 ##############################################################################
 # Friends
+@app.get("/friends")
+def view_friends():
+    """Lets the user view all of their current friends"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+    if g.friends:
+        data = g.friends
+        return render_template("/friends/friends_view.html", data=data)
+    else:
+        flash("Lets add a friend today", "info")
+        return redirect("/friends/add")
+
+
+@app.post("/friends/<int:id>/delete")
+def delete_friend(id):
+    """Lets the user delete a friend request"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
+    for friend in g.friends:
+        if friend.id == id:
+            to_delete = Friend.query.filter(
+                or_(
+                    and_(
+                        Friend.user_request_received_id == g.user.id,
+                        Friend.user_request_sent_id == id,
+                    ),
+                    and_(
+                        Friend.user_request_received_id == id,
+                        Friend.user_request_sent_id == g.user.id,
+                    ),
+                )
+            ).first()
+            db.session.delete(to_delete)
+            db.session.commit()
+            flash(f"Successfully removed {friend.name}", "success")
+    return redirect("/friends")
+
+
 @app.get("/friends/requests")
 def friend_requests():
     """Finds all the friend requests that have been sent"""
@@ -717,7 +757,7 @@ def friend_requests():
     return redirect("/")
 
 
-@app.route("/friends/requests/<id>")
+@app.post("/friends/requests/<id>")
 def accept_decline_friend(id):
     """Accepts or declines a friend request"""
     if not g.user:
