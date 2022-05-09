@@ -57,7 +57,7 @@ app.config["MAIL_PORT"] = "587"
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME", s_email_username)
 app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD", s_email_password)
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 api_key = os.environ.get("SPOON_API_KEY", s_api_key)
 mail = Mail(app)
