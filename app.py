@@ -1,4 +1,6 @@
 # App for Nom Nom Book. A cookbook you can create with your friends
+# TODO: Fix cookbook adjustments
+from crypt import methods
 import os
 import requests
 import json
@@ -768,7 +770,7 @@ def friend_requests():
     return redirect("/")
 
 
-@app.post("/friends/requests/<id>")
+@app.route("/friends/requests/<id>", methods=["GET", "POST"])
 def accept_decline_friend(id):
     """Accepts or declines a friend request"""
     if not g.user:
@@ -796,7 +798,7 @@ def accept_decline_friend(id):
         except:
             flash("Something went wrong", "warning")
 
-        return redirect("/friends/requests")
+        return redirect("/friends/add")
 
 
 def send_friend_request_email(friend):
@@ -808,7 +810,7 @@ def send_friend_request_email(friend):
         recipients=[friend.email],
     )
     msg.body = f"""{g.user.name} has sent you a friend request. To accept login here:
-    {url_for("/", _external=True)}"""
+    {url_for("view_friends", _external=True)}"""
     mail.send(msg)
 
 
@@ -823,16 +825,19 @@ def add_friend():
     form = AddFriend()
 
     if form.validate_on_submit():
-        try:
-            Friend.send_request(self_email=g.user.email, friend_email=form.email.data)
-            friend = User.query.filter_by(email=form.email.data).first()
-            if friend:
-                send_friend_request_email(friend)
-            flash("Thanks! We'll send that user a request", "success")
-            return redirect("/friends/add")
-        except:
-            flash("You've already added that user!", "warning")
-            return redirect("/friends/add")
+        friend = User.query.filter_by(email=form.email.data).first()
+        if friend:
+            try:
+                if friend not in g.friends:
+                    Friend.send_request(
+                        self_email=g.user.email, friend_email=form.email.data
+                    )
+                    send_friend_request_email(friend)
+                    flash("Thanks! We'll send that user a request", "success")
+            except:
+                flash("You've already added that user")
+        return redirect("/friends/add")
+
     return render_template(
         "/forms_base.html",
         form=form,
