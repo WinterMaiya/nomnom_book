@@ -1,4 +1,4 @@
-# TODO: Remove Friend
+# App for Nom Nom Book. A cookbook you can create with your friends
 import os
 import requests
 import json
