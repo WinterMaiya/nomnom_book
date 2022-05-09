@@ -49,14 +49,16 @@ class Friend(db.Model):
 
         sender = User.query.filter_by(email=self_email).first()
         receiver = User.query.filter_by(email=friend_email).first()
-        if sender not in receiver.friends:
-            if sender and receiver:
-                friend_to_be = Friend(
-                    user_request_sent_id=sender.id,
-                    user_request_received_id=receiver.id,
-                )
-                db.session.add(friend_to_be)
-                db.session.commit()
+        if sender and receiver:
+            for friend in sender.friends:
+                if friend.id == sender.id:
+                    return None
+            friend_to_be = Friend(
+                user_request_sent_id=sender.id,
+                user_request_received_id=receiver.id,
+            )
+            db.session.add(friend_to_be)
+            db.session.commit()
 
 
 class User(db.Model):

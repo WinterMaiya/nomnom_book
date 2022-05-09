@@ -13,11 +13,11 @@
 						src="{{request.profile_pic}}"
 						data-holder-rendered="true"
 					/>
-					<form action="/friends/requests/{{request.id}}?a=true" method="POST">
+					<form action="/friends/requests/{{request.id}}?a=true" method="GET">
 						<input type="hidden" name="a" value="true" />
 						<button class="btn btn-success my-2">Accept</button>
 					</form>
-					<form action="/friends/requests/{{request.id}}?a=false" method="POST">
+					<form action="/friends/requests/{{request.id}}?a=false" method="GET">
 						<input type="hidden" name="a" value="false" />
 						<button type="submit" class="btn btn-danger">Decline</button>
 					</form>
