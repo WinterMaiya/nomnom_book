@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block meta %}
 
-<meta property="og:title" content="{{data.title | capitalize}}" />
+<meta property="og:title" content="{{data.name | capitalize}}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/recipe/{{data.id}}" />
 <meta property="og:image" content="{{data.picture}}" />
@@ -12,7 +12,7 @@
 			<div class="col-12">
 				<img
 					src="{{data.picture}}"
-					alt="{{data.title}}"
+					alt="{{data.name}}"
 					class="shadow img-fluid"
 					style="max-width: 500px"
 				/>
