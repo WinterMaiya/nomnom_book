@@ -30,7 +30,14 @@
 							data-bs-target="#navbarOffcanvasLg"
 							aria-controls="navbarOffcanvasLg"
 						>
-							<span class="navbar-toggler-icon"></span>
+							<span class="navbar-toggler-icon position-relative"></span>{% if
+							g.friend_request %}
+							<span
+								class="position-absolute top-2 start-500 translate-middle badge rounded-pill bg-danger"
+								>{{g.request_length}}
+								<span class="visually-hidden">New alerts</span>
+							</span>
+							{% endif %}
 						</button>
 						{% if g.user %} {% endif %}
 						<div
@@ -132,14 +139,24 @@
 									{% if g.friend_request %}
 									<li class="nav-item search-sm">
 										<a
-											class="dropdown-item position-relative"
+											class="nav-link active position-relative"
 											href="/friends/requests"
-											>Requests</a
+											>Requests {% if g.friend_request %}
+											<span
+												class="position-absolute top-2 start-500 translate-middle badge rounded-pill bg-danger"
+												>{{g.request_length}}
+												<span class="visually-hidden">New alerts</span>
+											</span>
+											{% endif %}</a
 										>
 									</li>
+
 									{% endif %}
 									<li class="nav-item search-sm">
 										<a class="nav-link active" href="/profile">Profile</a>
+									</li>
+									<li class="nav-item search-sm">
+										<hr class="nav-divider" />
 									</li>
 									<li class="nav-item search-sm">
 										<a class="nav-link active" href="/recipe/add"
@@ -147,14 +164,23 @@
 										>
 									</li>
 									<li class="nav-item search-sm">
-										<a class="dropdown-item" href="/api/external"
+										<a class="nav-link active" href="/api/external"
 											>Add a Recipe from a Website</a
 										>
+									</li>
+									<li class="nav-item search-sm">
+										<hr class="nav-divider" />
+									</li>
+									<li class="nav-item search-sm">
+										<a class="nav-link active" href="/friends">Friends</a>
 									</li>
 									<li class="nav-item search-sm">
 										<a class="nav-link active" href="/friends/add"
 											>Find a Friend</a
 										>
+									</li>
+									<li class="nav-item search-sm">
+										<hr class="nav-divider" />
 									</li>
 									<li class="nav-item search-sm">
 										<a class="nav-link active" href="/logout">Logout</a>

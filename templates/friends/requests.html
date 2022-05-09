@@ -2,7 +2,7 @@
 <div class="container my-4">
 	<div class="row row-cols">
 		{% for request in data %}
-		<div class="col-3 text-center">
+		<div class="col-md-3 text-center">
 			<div class="card shadow">
 				<div class="card-body text-center">
 					<div class="card-title">{{request.name}}</div>
@@ -13,11 +13,11 @@
 						src="{{request.profile_pic}}"
 						data-holder-rendered="true"
 					/>
-					<form action="/friends/requests/{{request.id}}?a=true" method="GET">
+					<form action="/friends/requests/{{request.id}}?a=true" method="POST">
 						<input type="hidden" name="a" value="true" />
 						<button class="btn btn-success my-2">Accept</button>
 					</form>
-					<form action="/friends/requests/{{request.id}}?a=false" method="GET">
+					<form action="/friends/requests/{{request.id}}?a=false" method="POST">
 						<input type="hidden" name="a" value="false" />
 						<button type="submit" class="btn btn-danger">Decline</button>
 					</form>

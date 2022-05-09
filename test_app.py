@@ -13,7 +13,7 @@ from app import app, CURR_USER_KEY
 db.create_all()
 
 app.config["WTF_CSRF_ENABLED"] = False
-os.environ["DATABASE_URL"] = "postgresql:///nomnom_test"
+app.config["DATABASE_URI"] = "postgresql:///nomnom_test"
 # app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
 
 
@@ -284,7 +284,7 @@ class TestApp(TestCase):
             resp = c.get("/friends/requests")
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Angel", str(resp.data))
-            resp = c.get("/friends/requests/3?a=true", follow_redirects=True)
+            resp = c.post("/friends/requests/3?a=true", follow_redirects=True)
             self.assertIn("Cookbook", str(resp.data))
             self.assertIn("Angel", str(resp.data))
 
@@ -296,7 +296,7 @@ class TestApp(TestCase):
             resp = c.get("/friends/requests")
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Angel", str(resp.data))
-            resp = c.get("/friends/requests/3?a=false", follow_redirects=True)
+            resp = c.post("/friends/requests/3?a=false", follow_redirects=True)
             self.assertIn("Cookbook", str(resp.data))
             self.assertNotIn("Angel", str(resp.data))
 
@@ -444,3 +444,23 @@ class TestApp(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn("You have successfully logged out", str(resp.data))
             self.assertIn("Login", str(resp.data))
+
+    def test_friends_page(self):
+        with self.client as c:
+            resp = c.get("/friends")
+            self.assertEqual(resp.status_code, 302)
+
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.get("friends")
+            self.assertIn("Romeo", str(resp.data))
+
+    def test_friend_delete(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 1
+
+            resp = c.post("/friends/2/delete", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("removed romeo", str(resp.data))
