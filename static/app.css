@@ -9,7 +9,7 @@ html {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
-	line-height: 40px;
+	/* line-height: 60px; */
 }
 
 @media (min-width: 768px) {
@@ -60,7 +60,7 @@ body {
 	padding-top: 90px;
 	background: white;
 	background: linear-gradient(top, #ffffff, rgba(255, 238, 224));
-	padding-bottom: 100px;
+	padding-bottom: 150px;
 }
 
 .c_image {

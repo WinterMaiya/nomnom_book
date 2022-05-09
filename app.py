@@ -56,7 +56,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "postgresql:///nomnom_db"
 ).replace(
     "://", "ql://", 1
-)  # Remove in development
+)  # Remove in development. Need for bug in heroku
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
@@ -180,7 +180,7 @@ def signup():
         except IntegrityError as e:
             flash("Email already taken", "danger")
             print(e)
-            return render_template("/signup.html", form=form)
+            return redirect("/signup")
 
         do_login(user)
         flash(f"Thanks for signing up {user.name}!", "success")
@@ -627,7 +627,7 @@ def edit_recipe(id):
         return redirect("/login")
     form = EditRecipeForm()
     recipe = Recipe.query.get_or_404(id)
-    if recipe.id == g.user.id:
+    if recipe.user_id == g.user.id:
         if form.validate_on_submit():
             ingredients = json.dumps(form.ingredients.data)
             directions = json.dumps(form.directions.data)
