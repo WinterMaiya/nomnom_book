@@ -1,4 +1,11 @@
-{% extends 'base.html' %}{% block content %}
+{% extends 'base.html' %} {% block meta %}
+
+<meta property="og:title" content="{{data.title | capitalize}}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="/recipe/{{data.id}}" />
+<meta property="og:image" content="{{data.picture}}" />
+<meta property="og:description" content="{{data.description}}" />
+{% endblock meta %} {% block content %}
 <div class="section">
 	<div class="container">
 		<div class="row text-center">
