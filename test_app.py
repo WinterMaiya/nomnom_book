@@ -14,7 +14,7 @@ db.create_all()
 
 app.config["WTF_CSRF_ENABLED"] = False
 app.config["DATABASE_URI"] = "postgresql:///nomnom_test"
-# app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
+app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
 
 
 class TestApp(TestCase):
@@ -66,10 +66,14 @@ class TestApp(TestCase):
             user_id=1,
         )
         db.session.add(self.recipe1)
+
+        # Adds a friend who has accepted a request.
         self.add_friend = Friend(
             user_request_sent_id=2, user_request_received_id=1, accepted=True
         )
         db.session.add(self.add_friend)
+
+        # Adds a friend who has not accepted the request yet.
         self.add_friend_request = Friend(
             user_request_sent_id=3, user_request_received_id=1, accepted=False
         )
@@ -284,7 +288,7 @@ class TestApp(TestCase):
             resp = c.get("/friends/requests")
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Angel", str(resp.data))
-            resp = c.post("/friends/requests/3?a=true", follow_redirects=True)
+            resp = c.get("/friends/requests/3?a=true", follow_redirects=True)
             self.assertIn("Cookbook", str(resp.data))
             self.assertIn("Angel", str(resp.data))
 
@@ -296,7 +300,7 @@ class TestApp(TestCase):
             resp = c.get("/friends/requests")
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Angel", str(resp.data))
-            resp = c.post("/friends/requests/3?a=false", follow_redirects=True)
+            resp = c.get("/friends/requests/3?a=false", follow_redirects=True)
             self.assertIn("Cookbook", str(resp.data))
             self.assertNotIn("Angel", str(resp.data))
 
@@ -357,7 +361,7 @@ class TestApp(TestCase):
                 sess[CURR_USER_KEY] = 1
             resp = c.get("/api/recipe/1439063")
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("Homemade yum yum", str(resp.data))
+            self.assertIn("Homemade Yum Yum", str(resp.data))
 
     def test_add_recipe_url(self):
         """If this test fails double check that we haven't excceded our api limit"""
@@ -454,7 +458,7 @@ class TestApp(TestCase):
                 sess[CURR_USER_KEY] = 1
 
             resp = c.get("friends")
-            self.assertIn("Romeo", str(resp.data))
+            self.assertIn("romeo", str(resp.data))
 
     def test_friend_delete(self):
         with self.client as c:
