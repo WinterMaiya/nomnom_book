@@ -464,3 +464,6 @@ class TestApp(TestCase):
             resp = c.post("/friends/2/delete", follow_redirects=True)
             self.assertEqual(resp.status_code, 200)
             self.assertIn("removed romeo", str(resp.data))
+
+
+# Add more tests here
