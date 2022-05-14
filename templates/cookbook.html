@@ -130,7 +130,7 @@ block content %}
 						/>
 						<h2 class="text-break fs-4">{{recipe.name}}</h2>
 						<p>{{recipe.description[:75] | safe}}...</p>
-						{% if recipe.create_by != unknown %}
+						{% if recipe.create_by != "unknown" %}
 						<p>Created By: {{recipe.created_by}}</p>
 						{% endif %} {% if not recipe.homemade %}
 						<p>Added By: {{recipe.user.name}}</p>
