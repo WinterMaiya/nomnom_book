@@ -7,18 +7,18 @@
 <div class="container">
 	<div class="row row-cols">
 		{% for recipe in recipes %}
-		<div class="col col-lg-4">
+		<div class="col col-md-2 col-1 col-lg-4">
 			<div class="card shadow text-center display-6 m-2">
-				<h3 class="card-header">{{recipe.name | capitalize}}</h3>
+				<h3 class="card-header">{{recipe.name}}</h3>
 				<img
 					class="img-fluid"
 					src="{{recipe.picture}}"
 					alt="{{recipe.name}}-image"
 				/>
 				<div class="card-body">
-					<p class="fs-5">Created By: {{recipe.created_by | capitalize}}</p>
+					<p class="fs-5">Created By: {{recipe.created_by}}</p>
 					{% if not recipe.homemade %}
-					<p class="fs-5">Added By: {{recipe.user.name | capitalize}}</p>
+					<p class="fs-5">Added By: {{recipe.user.name}}</p>
 					{% endif %}
 					<a href="/api/recipe/{{recipe.id}}" class="btn btn-primary"
 						>View Recipe</a
@@ -32,7 +32,7 @@
 	<h3 class="display-6 text-center underline">More Results:</h3>
 	<div class="row row-cols">
 		{% for recipe in data.results %}
-		<div class="col col-lg-4">
+		<div class="col col-1 col-md-2 col-lg-4">
 			<div class="card shadow text-center display-6 m-2">
 				<h3 class="card-header">{{recipe.title}}</h3>
 				<img

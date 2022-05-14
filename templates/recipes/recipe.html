@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block meta %}
 
-<meta property="og:title" content="{{data.name | capitalize}}" />
+<meta property="og:title" content="{{data.name}}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/recipe/{{data.id}}" />
 <meta property="og:image" content="{{data.picture}}" />
@@ -21,7 +21,7 @@
 	</div>
 	<div class="container">
 		<div class="row bg-none">
-			<h1 class="text-center display-2">{{data.name | capitalize}}</h1>
+			<h1 class="text-center display-2">{{data.name}}</h1>
 			{% if g.user.id == data.user_id %}
 			<div class="text-center py-2">
 				<a class="btn btn-primary shadow" href="/recipe/{{data.id}}/edit"
@@ -34,7 +34,7 @@
 			{% endif %}
 			<div class="text-center">
 				Created By:
-				<i>{{data.created_by | capitalize}}</i>
+				<i>{{data.created_by}}</i>
 			</div>
 			<div class="text-left">{{data.description | safe}}</div>
 		</div>

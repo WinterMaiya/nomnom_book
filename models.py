@@ -50,6 +50,8 @@ class Friend(db.Model):
         sender = User.query.filter_by(email=self_email).first()
         receiver = User.query.filter_by(email=friend_email).first()
         if sender and receiver:
+            if sender == receiver:
+                return None
             for friend in sender.friends:
                 if friend.id == sender.id:
                     return None

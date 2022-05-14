@@ -5,7 +5,7 @@
 		<div class="col-lg-3 text-center">
 			<div class="card shadow">
 				<div class="card-body text-center">
-					<div class="card-title">{{friend.name | capitalize}}</div>
+					<div class="card-title">{{friend.name}}</div>
 					<img
 						class="rounded-circle z-depth-2 img-fluid"
 						style="width: 100px"
@@ -13,9 +13,7 @@
 						src="{{friend.profile_pic}}"
 						data-holder-rendered="true"
 					/>
-					<div class="card-text">
-						Favorite Food: {{friend.favorite_food | capitalize}}
-					</div>
+					<div class="card-text">Favorite Food: {{friend.favorite_food}}</div>
 					<button
 						type="button"
 						class="btn btn-danger"

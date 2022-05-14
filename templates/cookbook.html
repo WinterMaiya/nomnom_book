@@ -39,9 +39,7 @@ block content %}
 	<div class="bd-main">
 		<div class="row">
 			<div class="col">
-				<h1 class="text-center display-1">
-					{{g.user.name | capitalize}}'s Cookbook
-				</h1>
+				<h1 class="text-center display-1">{{g.user.name}}'s Cookbook</h1>
 			</div>
 		</div>
 
@@ -130,11 +128,12 @@ block content %}
 							alt="{{recipe.name}}"
 							class="img-fluid py-1"
 						/>
-						<h2 class="text-break fs-4">{{recipe.name | capitalize}}</h2>
+						<h2 class="text-break fs-4">{{recipe.name}}</h2>
 						<p>{{recipe.description[:75] | safe}}...</p>
-						<p>Created By: {{recipe.created_by | capitalize}}</p>
-						{% if not recipe.homemade %}
-						<p>Added By: {{recipe.user.name | capitalize}}</p>
+						{% if recipe.create_by != unknown %}
+						<p>Created By: {{recipe.created_by}}</p>
+						{% endif %} {% if not recipe.homemade %}
+						<p>Added By: {{recipe.user.name}}</p>
 						{% endif %}
 						<a href="/recipe/{{recipe.id}}" class="btn btn-primary"
 							>See Recipe</a
