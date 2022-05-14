@@ -47,7 +47,7 @@ block content %}
 		<div class="row">
 			<div class="col text-center">
 				<h1 class="display-6 text-center">
-					Theres nothing here... let's add a recipe today!!
+					There's nothing here... let's add a recipe today!!
 				</h1>
 				<a href="/recipe/add" class="btn btn-primary text-center"
 					>Add a Custom Recipe</a
@@ -130,7 +130,7 @@ block content %}
 						/>
 						<h2 class="text-break fs-4">{{recipe.name}}</h2>
 						<p>{{recipe.description[:75] | safe}}...</p>
-						{% if recipe.create_by != unknown %}
+						{% if recipe.create_by != "unknown" %}
 						<p>Created By: {{recipe.created_by}}</p>
 						{% endif %} {% if not recipe.homemade %}
 						<p>Added By: {{recipe.user.name}}</p>
