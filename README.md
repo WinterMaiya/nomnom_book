@@ -8,7 +8,8 @@ The NomNom Book is a website that lets you create and share recipes with your fr
 
 ## Deployed Website
 
-You can view the deployed website here: [www.nomnombook.com](http://www.nomnombook.com). The website is being hosted by ***Heroku***.
+<s>You can view the deployed website here: http://www.nomnombook.com. The website is being hosted by ***Heroku***.</s>
+Heroku no longer allows a free addition to hosting so I am in the process of moving this application to a new site. 
 
 ## Getting Started:
 ### Create a username and password
