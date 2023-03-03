@@ -23,6 +23,7 @@ try:
         s_cloud_name,
         s_email_username,
         s_email_password,
+        s_database_uri,
     )
 except:
     s_api_key = None
@@ -31,6 +32,7 @@ except:
     s_cloud_name = None
     s_email_username = None
     s_email_password = None
+    s_database_uri = None
 from models import User, connect_db, db, Friend, Recipe
 from forms import (
     SignUp,
@@ -54,11 +56,10 @@ CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "DATABASE_URL", "postgresql:///nomnom_db"
-).replace(
-    "://", "ql://", 1
-)  # Remove in development. Need for bug in heroku
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", s_database_uri)
+# .replace(
+#     "://", "ql://", 1
+# )  # Remove in development. Need for bug in heroku
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
