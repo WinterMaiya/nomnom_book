@@ -57,9 +57,6 @@ CURR_USER_KEY = "curr_user"
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", s_database_uri)
-# .replace(
-#     "://", "ql://", 1
-# )  # Remove in development. Need for bug in heroku
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
@@ -71,7 +68,7 @@ app.config["MAIL_PORT"] = "587"
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME", s_email_username)
 app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD", s_email_password)
-# toolbar = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 api_key = os.environ.get("SPOON_API_KEY", s_api_key)
 mail = Mail(app)
@@ -138,11 +135,11 @@ def do_logout():
         del session[CURR_USER_KEY]
 
 
-# def check_user():
-#     """This makes sure the user is logged in to access a route. Otherwise it redirects to login with a warning"""
-#     if not g.user:
-#         flash("Must be logged in", "danger")
-#         return redirect("/login")
+def check_user():
+    """This makes sure the user is logged in to access a route. Otherwise it redirects to login with a warning"""
+    if not g.user:
+        flash("Must be logged in", "danger")
+        return redirect("/login")
 
 
 @app.route("/logout")
@@ -252,7 +249,7 @@ def homepage():
 @app.errorhandler(404)
 def page_not_found(e):
     """Custom 404 page not found error"""
-
+    print(e)
     return render_template("404.html"), 404
 
 
